@@ -44,4 +44,27 @@ describe('blackboard', function() {
     blackboard.put({id:"1", bar: true});
     assert.deepEqual(catchAllQuery.getReferences()["1"], {id:"1", bar: true});
   });
+
+  it('should asynchronously put new objects', function(done) {
+    let blackboard = new bb.Blackboard();
+    let foosToBarsRule = function(ob, put) {
+      if (!ob.foo) return false;
+      put({id:"2", bar:ob.foo});
+      return true;
+    };
+    let catchAllQuery = new CatchAllQuery();
+    blackboard.pushRule(foosToBarsRule);
+    blackboard.pushQuery(catchAllQuery);
+
+    blackboard.put({id:"0", foo: true});
+    assert.deepEqual(catchAllQuery.getReferences()["0"], undefined);
+    setTimeout(function() { // this will run after nextTick
+      assert.deepEqual(catchAllQuery.getReferences()["2"], {id: "2", bar: true});
+      done();
+    },
+    1);
+
+  });
 });
+
+
