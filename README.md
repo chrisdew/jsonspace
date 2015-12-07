@@ -8,6 +8,16 @@ The goal is to provide an open source, performant, geographically distributed an
 A first concrete implementation will be a [pub/sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) messaging system,  This will allowing low-latency intra-continental messaging, while ensuring timely global delivery. 
 
 
+Concept
+-------
+
+The JSON Space servers can be augmented with rules (written in JavaScript) which match JSON objects.  The return code from a rule determines whether the JSON is removed (`true`) or left for other rules to process (`false`). 
+
+Each rule may generate zero or more new JSON objects.
+
+The JSON Space protocols generate and remove JSON objects themselves - generating a JSON object is sufficient to send network traffic.  (FIXME: Add code exmaples.)
+
+
 Protocols
 ---------
 
@@ -28,7 +38,7 @@ Other will be implemented as neded:
 Languages
 ---------
 
-All server code modules will initially be written in (ES6)JavaScript/NodeJS, but it is exepcted that some portions will need to be rewritten in C/Haskell/Rust to use server hardware more efficiently.
+All server code modules will initially be written in (ES6) JavaScript/NodeJS, but it is expected that some portions will need to be rewritten in C/Haskell/Rust to use server hardware more efficiently.
 
 
 Licensing
