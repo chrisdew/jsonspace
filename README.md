@@ -50,7 +50,7 @@ JSON Space client code is licensed under the MIT license, so that it does not ad
 
 The JSON Space server code is licensed under the AGPLv3 - the server code includes a URL from where the server code may be downloaded.
 
-If your organisation would like to use and extend the server code, without serving your source code back to the community, please [contact us](jsonspace_licensing@barricane.com), we are happy to discuss commercial licensing costs. 
+If your organisation would like to use and extend the server code, without serving your source code back to the community, please [contact us](jsonspace_licensing@barricane.com) - we are happy to discuss commercial licensing costs. 
  
 
 Hosting
