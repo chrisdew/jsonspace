@@ -28,7 +28,7 @@ The JSON Space server will initially be able to accept rules about the following
 * WebSocket
 * DNS
 
-Other will be implemented when needed, but will probably include:
+Others will be implemented when needed, and will probably include:
 
 * HTTP server
 * HTTP client
