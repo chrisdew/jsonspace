@@ -28,7 +28,7 @@ The JSON Space server will initially be able to accept rules about the following
 * WebSocket
 * DNS
 
-Other will be implemented as neded:
+Other will be implemented when needed, but will probably include:
 
 * HTTP server
 * HTTP client
@@ -46,7 +46,7 @@ All server code modules will initially be written in (ES6) JavaScript/NodeJS, bu
 Licensing
 ---------
 
-JSON Space client code is licensed under the MIT license, so that it does not add any open-source obligations to the mobile, desktop or web apps which incoporate it.
+JSON Space client code is licensed under the MIT license, so that it does not add any open-source obligations to the mobile, desktop or web apps which incorporate it.
 
 The JSON Space server code is licensed under the AGPLv3 - the server code includes a URL from where the server code may be downloaded.
 
@@ -56,4 +56,4 @@ If your organisation would like to use and extend the server code, without servi
 Hosting
 -------
 
-[Barricane Technology Ltd.](http://www.barricane.com) are the current authors and custodians of JSON Space and can offer you a competitive hosted solution.  Contact [Chris Dew](chris.dew@barricane.com).
+[Barricane Technology Ltd.](http://www.barricane.com) are the authors and current custodians of JSON Space.  We can offer you a competitive hosted solution.  Contact [Chris Dew](chris.dew@barricane.com).
