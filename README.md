@@ -5,7 +5,7 @@ JSON Space is an implementation of a variation of the [TupleSpace](http://c2.com
 
 The goal is to provide an open source, performant, geographically distributed and failure tolerant message switch.
 
-A first concrete implementation will be a [pub/sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) messaging system,  This will allowing low-latency intra-continental messaging, while ensuring timely global delivery. 
+A first concrete implementation will be a [pub/sub](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) messaging system.  This will allow extremely low-latency intra-continental messaging, while ensuring timely global delivery. 
 
 
 Concept
@@ -15,7 +15,9 @@ The JSON Space servers can be augmented with rules (written in JavaScript) which
 
 Each rule may generate zero or more new JSON objects.
 
-The JSON Space protocols generate and remove JSON objects themselves - generating a JSON object is sufficient to send network traffic.  (FIXME: Add code exmaples.)
+The JSON Space protocols generate and remove JSON objects themselves - generating a JSON object is sufficient to send network traffic.  (FIXME: Add code examples.)
+
+JSON Space is a betteries-included kit of parts for building the message switch you need, with the domain-specific logic you specifiy, with redundancy and abuse-prevention built-in.
 
 
 Protocols
@@ -50,3 +52,8 @@ The JSON Space server code is licensed under the AGPLv3 - the server code includ
 
 If your organisation would like to use and extend the server code, without serving your source code back to the community, please contact [Chris Dew](chris.dew@barricane.com) who will be happy to discuss commercial licensing costs. 
  
+
+Hosting
+-------
+
+[Barricane Technology Ltd.](http://www.barricane.com) are the current authors and custodians of JSON Space and can offer you a competitive hosted solution.  Contact [Chris Dew](chris.dew@barricane.com).
