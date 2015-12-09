@@ -12,7 +12,6 @@ class Blackboard {
 
   put(ob) {
     for (let i in this._rules) {
-      // FIXME: make this async
       var that = this;
       let drop = this._rules[i](ob, function(ob) {
         process.nextTick(function() {
@@ -32,6 +31,17 @@ class Blackboard {
 
   pushQuery(query) {
     this._queries.push(query);
+  }
+
+  getReferences() {
+    let ret = {}; // list each referenced object a maximum of once
+    for (let query of this._queries) {
+      let references = query.getReferences();
+      for (let id in references) {
+        ret[id] = references[id];
+      }
+    }
+    return ret;
   }
 }
 

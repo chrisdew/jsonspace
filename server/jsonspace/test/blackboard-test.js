@@ -19,6 +19,32 @@ class CatchAllQuery {
   getReferences() {
     return klone(this._objects);
   }
+
+  getResult() {
+    return klone(this._objects);
+  }
+}
+
+class CounterQuery {
+  constructor(prop) {
+    this._prop = prop;
+    this._objects = {};
+    this._count = 0;
+  }
+
+  put(ob) {
+    if (!ob[this._prop]) return;
+    this._count++;
+    this._objects[ob.id] = ob;
+  }
+
+  getReferences() {
+    return klone(this._objects);
+  }
+
+  getResult() {
+    return this._count;
+  }
 }
 
 function klone(ob) {
@@ -61,8 +87,28 @@ describe('blackboard', function() {
     setTimeout(function() { // this will run after nextTick
       assert.deepEqual(catchAllQuery.getReferences()["2"], {id: "2", bar: true});
       done();
-    },
-    1);
+    }, 1);
+
+  });
+
+  it('should be able to report the queries references, for replication', function() {
+    let blackboard = new bb.Blackboard();
+    let fooCounter = new CounterQuery('foo');
+    let barCounter = new CounterQuery('bar');
+    blackboard.pushQuery(fooCounter);
+    blackboard.pushQuery(barCounter);
+
+    blackboard.put({id:"0", foo: true});
+    blackboard.put({id:"1", foo: true, bar: true});
+    blackboard.put({id:"2", baz: true});
+    blackboard.put({id:"3", quux: true});
+
+    assert.deepEqual(fooCounter.getResult(), 2);
+    assert.deepEqual(barCounter.getResult(), 1);
+
+    assert.deepEqual(fooCounter.getReferences(), { '0': { id: '0', foo: true }, '1': { id: '1', foo: true, bar: true } });
+    assert.deepEqual(barCounter.getReferences(), { '1': { id: '1', foo: true, bar: true } });
+    assert.deepEqual(blackboard.getReferences(), { '0': { id: '0', foo: true }, '1': { id: '1', foo: true, bar: true } });
 
   });
 });
