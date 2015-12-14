@@ -6,16 +6,8 @@
 
 // FIXME: find a way to move the logging/fs code out of blackboard, as it should not have to be concerned with IO
 const fs = require('fs');
+const u = require('./util');
 
-function firstNonIdPropertyName(ob) {
-  let p = null;
-  for (p in ob) {
-    if (p != 'id') {
-      break;
-    }
-  }
-  return p;
-}
 
 class Blackboard {
   constructor() {
@@ -27,8 +19,8 @@ class Blackboard {
 
   put(ob) {
     // work out the type (simple the first property other than id)
-    const type = firstNonIdPropertyName(ob);
-    if (type == null) return; // nothing to do
+    const type = u.firstNonIdPropertyName(ob);
+    if (!type) return; // nothing to do
 
     // handle logging meta objects
     if (type == 'logging') {
@@ -48,14 +40,21 @@ class Blackboard {
     // handle protocol meta objects
     if (type == 'protocol') {
       // find out which protocol
-      const protocolName = firstNonIdPropertyName(ob.protocol);
+      const protocolName = u.firstNonIdPropertyName(ob.protocol);
       const required = require('./protocol/' + protocolName);
       if (ob.protocol[protocolName].listen) {
         var that = this;
-        required.listen(ob, function() {
-          that.put(ob)
+        // FIXME: having trouble with destructuring - const {type, send} = ... isn't working
+        const typeSend = required.listen(ob, function(protocol_ob) {
+          that.put(protocol_ob);
         });
+        this.pushRule(typeSend.type, typeSend.send)
       }
+    }
+
+    if (type == 'rule') {
+      const required = require('./rule/' + ob.rule.name);
+      this.pushRule(ob.rule.type, required.exec);
     }
 
     for (let i in this._rules[type]) {
@@ -65,6 +64,7 @@ class Blackboard {
           that.put(ob)
         });
       });
+      // FIXME: semantics - should this return, or just break?
       if (drop) return;
     }
     for (let i in this._queries) {

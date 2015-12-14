@@ -1,6 +1,5 @@
 [
   {"protocol":{"websocket":{"listen":{"port":8000,"path":"/pubsub"}}}},
-  {"rule":{"type":"websocket_rx_raw","function":"websocket_rx_raw_to_rx_ob"}},
-  {"query":{"type":"websocket_rx_ob","class":"PubSub","params":{"create":"subscribe.channel","delete":"unsubscribe.channel"}}},
+  {"rule":{"type":"websocket_rx","name":"echo"}},
   {}
 ]
