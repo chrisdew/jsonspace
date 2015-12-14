@@ -54,21 +54,21 @@ function klone(ob) {
 describe('blackboard', function() {
   it('should have no rules', function() {
     let blackboard = new bb.Blackboard();
-    assert.deepEqual(blackboard._rules.length, 0);
+    assert.deepEqual(blackboard._rules, {});
   });
 
   it('should drop objects which match a dropping rule', function() {
     let blackboard = new bb.Blackboard();
     let dropFooRule = function(ob) { if (ob.foo) return true; };
     let catchAllQuery = new CatchAllQuery();
-    blackboard.pushRule(dropFooRule);
+    blackboard.pushRule('foo', dropFooRule);
     blackboard.pushQuery(catchAllQuery);
 
-    blackboard.put({id:"0", foo: true});
+    blackboard.put({id:"0",foo:{some:'data'}});
     assert.deepEqual(catchAllQuery.getReferences()["0"], undefined);
 
-    blackboard.put({id:"1", bar: true});
-    assert.deepEqual(catchAllQuery.getReferences()["1"], {id:"1", bar: true});
+    blackboard.put({id:"1",bar:{some:'data'}});
+    assert.deepEqual(catchAllQuery.getReferences()["1"], {id:"1",bar:{some:'data'}});
   });
 
   it('should asynchronously put new objects', function(done) {
@@ -79,13 +79,13 @@ describe('blackboard', function() {
       return true;
     };
     let catchAllQuery = new CatchAllQuery();
-    blackboard.pushRule(foosToBarsRule);
+    blackboard.pushRule('foo', foosToBarsRule);
     blackboard.pushQuery(catchAllQuery);
 
-    blackboard.put({id:"0", foo: true});
+    blackboard.put({id:"0",foo:{some:'data'}});
     assert.deepEqual(catchAllQuery.getReferences()["0"], undefined);
     setTimeout(function() { // this will run after nextTick
-      assert.deepEqual(catchAllQuery.getReferences()["2"], {id: "2", bar: true});
+      assert.deepEqual(catchAllQuery.getReferences()["2"], {id:"2",bar:{some:'data'}});
       done();
     }, 1);
 
@@ -98,10 +98,10 @@ describe('blackboard', function() {
     blackboard.pushQuery(fooCounter);
     blackboard.pushQuery(barCounter);
 
-    blackboard.put({id:"0", foo: true});
-    blackboard.put({id:"1", foo: true, bar: true});
-    blackboard.put({id:"2", baz: true});
-    blackboard.put({id:"3", quux: true});
+    blackboard.put({id:"0",foo: true});
+    blackboard.put({id:"1",foo: true, bar: true});
+    blackboard.put({id:"2",baz: true});
+    blackboard.put({id:"3",quux: true});
 
     assert.deepEqual(fooCounter.getResult(), 2);
     assert.deepEqual(barCounter.getResult(), 1);

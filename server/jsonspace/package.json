@@ -18,6 +18,7 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "ws": "^0.8.1"
   }
 }
