@@ -62,7 +62,7 @@ describe('blackboard', function() {
     let dropFooRule = function(ob) { if (ob.foo) return true; };
     let catchAllQuery = new CatchAllQuery();
     blackboard.pushRule('foo', dropFooRule);
-    blackboard.pushQuery(catchAllQuery);
+    blackboard.pushQuery('catchAllQuery', catchAllQuery);
 
     blackboard.put({id:"0",foo:{some:'data'}});
     assert.deepEqual(catchAllQuery.getReferences()["0"], undefined);
@@ -80,7 +80,7 @@ describe('blackboard', function() {
     };
     let catchAllQuery = new CatchAllQuery();
     blackboard.pushRule('foo', foosToBarsRule);
-    blackboard.pushQuery(catchAllQuery);
+    blackboard.pushQuery('catchAllQuery', catchAllQuery);
 
     blackboard.put({id:"0",foo:{some:'data'}});
     assert.deepEqual(catchAllQuery.getReferences()["0"], undefined);
@@ -95,8 +95,8 @@ describe('blackboard', function() {
     let blackboard = new bb.Blackboard();
     let fooCounter = new CounterQuery('foo');
     let barCounter = new CounterQuery('bar');
-    blackboard.pushQuery(fooCounter);
-    blackboard.pushQuery(barCounter);
+    blackboard.pushQuery('fooCounter', fooCounter);
+    blackboard.pushQuery('barCounter', barCounter);
 
     blackboard.put({id:"0",foo: true});
     blackboard.put({id:"1",foo: true, bar: true});

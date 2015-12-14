@@ -13,7 +13,7 @@ class Blackboard {
   constructor() {
     this._rules = {}
     this._protocols = {};
-    this._queries = [];
+    this._queries = {};
     this._log = null;
   }
 
@@ -54,7 +54,14 @@ class Blackboard {
 
     if (type == 'rule') {
       const required = require('./rule/' + ob.rule.name);
-      this.pushRule(ob.rule.type, required.exec);
+      this.pushRule(ob.rule.type, required.exec, this._queries);
+    }
+
+    if (type == 'query') {
+      const required = require('./query/' + ob.query.name);
+      const query = new required.Query();
+      // FIXME: design a way of allowing more than one instance of a query
+      this.pushQuery(ob.query.name, query);
     }
 
     for (let i in this._rules[type]) {
@@ -67,8 +74,10 @@ class Blackboard {
       // FIXME: semantics - should this return, or just break?
       if (drop) return;
     }
-    for (let i in this._queries) {
-      this._queries[i].put(ob);
+    for (let name in this._queries) {
+      //console.log('name', name);
+      //console.log('this._queries', this._queries);
+      this._queries[name].put(ob);
     }
   }
 
@@ -79,14 +88,14 @@ class Blackboard {
     this._rules[type].push(rule);
   }
 
-  pushQuery(query) {
-    this._queries.push(query);
+  pushQuery(name, query) {
+    this._queries[name] = query;
   }
 
   getReferences() {
     let ret = {}; // list each referenced object a maximum of once
-    for (let query of this._queries) {
-      let references = query.getReferences();
+    for (let name in this._queries) {
+      let references = this._queries[name].getReferences();
       for (let id in references) {
         ret[id] = references[id];
       }

@@ -1,5 +1,7 @@
 [
   {"protocol":{"websocket":{"listen":{"port":8000,"path":"/pubsub"}}}},
-  {"rule":{"type":"websocket_rx","name":"echo"}},
+  {"rule":{"type":"websocket_raw_rx","name":"rawToObj"}},
+  {"rule":{"type":"websocket_obj_rx","name":"publish"}},
+  {"query":{"name":"subscribersByChannel"}},
   {}
 ]

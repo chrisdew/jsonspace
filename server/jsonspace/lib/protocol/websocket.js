@@ -20,7 +20,7 @@ function listen(ob, put) {
     conns[conn_id] = ws;
     put({websocket_connected:{conn_id:conn_id,tcp_conn:tcp_conn}});
     ws.on('message', (message) => {
-      put({websocket_rx:{conn_id:conn_id,data:message}});
+      put({websocket_raw_rx:{conn_id:conn_id,data:message}});
     })
     ws.on('end', () => {
       put({websocket_disconnected:{conn_id:conn_id,data:message}});
@@ -31,9 +31,9 @@ function listen(ob, put) {
   function send(ob, put) {
     const conn = conns[ob.websocket_tx.conn_id];
     if (!conn) return;
-    conn.send(ob.websocket_tx.data);
+    conn.send(JSON.stringify(ob.websocket_obj_tx.obj));
   }
-  return {type:'websocket_tx', send:send};
+  return {type:'websocket_obj_tx', send:send};
 }
 
 exports.listen = listen;
