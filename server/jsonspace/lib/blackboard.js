@@ -10,17 +10,24 @@ const u = require('./util');
 
 
 class Blackboard {
-  constructor() {
+  constructor(ip, dateFn) {
+    if (!ip) ip = '127.0.0.1';
+    if (!dateFn) dateFn = () => { return "1970-01-01T00:00:00.000Z"};
+
     this._rules = {}
     this._protocols = {};
     this._queries = {};
     this._log = null;
+    this._idGenerator = new IdGenerator(ip, dateFn);
   }
 
   put(ob) {
     // work out the type (simple the first property other than id)
     const type = u.firstNonIdPropertyName(ob);
     if (!type) return; // nothing to do
+
+    // give it an id, if it doesn't have one
+    if (!ob.id) ob.id = this._idGenerator.generate();
 
     // handle logging meta objects
     if (type == 'logging') {
@@ -58,9 +65,8 @@ class Blackboard {
     }
 
     if (type == 'query') {
-      const required = require('./query/' + ob.query.name);
-      const query = new required.Query();
-      // FIXME: design a way of allowing more than one instance of a query
+      const required = require('./query/' + ob.query.code);
+      const query = new required.Query(...ob.query.args);
       this.pushQuery(ob.query.name, query);
     }
 
@@ -101,6 +107,31 @@ class Blackboard {
       }
     }
     return ret;
+  }
+}
+
+// ID generator
+//
+// This generates unique IDs for messages which lack them.  A simple uuid could have been used, but this is more useful
+// for debugging.
+
+class IdGenerator {
+  constructor(ip, dateFn) {
+    this._ip = ip;
+    this._dateFn = dateFn;
+    this._lastDate;
+    this._counter = 0;
+  }
+
+  generate() {
+    let date = this._dateFn();
+    if (date == this._lastDate) {
+      this._counter++;
+    } else {
+      this._lastDate = date;
+      this._counter = 0;
+    }
+    return `{date.toISOString()}|{this._counter}|{this._ip}`;
   }
 }
 

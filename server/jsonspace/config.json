@@ -1,7 +1,9 @@
 [
   {"protocol":{"websocket":{"listen":{"port":8000,"path":"/pubsub"}}}},
   {"rule":{"type":"websocket_raw_rx","name":"rawToObj"}},
+  {"rule":{"type":"websocket_obj_rx","name":"login"}},
   {"rule":{"type":"websocket_obj_rx","name":"publish"}},
-  {"query":{"name":"subscribersByChannel"}},
+  {"query":{"name":"websocket_logged_inUsernameByConn_id","code":"fieldbyField","args":["websocket_logged_in","username","conn_id"]}},
+  {"query":{"name":"subscribersByChannel","code":"subscribersByChannel"}},
   {}
 ]
