@@ -29,9 +29,12 @@ function listen(ob, put) {
 
   // this function is given back to the blackboard to handle outgoing websocket data
   function send(ob, put) {
-    const conn = conns[ob.websocket_tx.conn_id];
-    if (!conn) return;
-    conn.send(JSON.stringify(ob.websocket_obj_tx.obj));
+    const conn = conns[ob.websocket_obj_tx.conn_id];
+    if (conn) {
+      conn.send(JSON.stringify(ob.websocket_obj_tx.obj));
+    } else {
+      put({error:{message:'unable to send due to non-existent conn_id'}, ref:ob});
+    }
   }
   return {type:'websocket_obj_tx', send:send};
 }

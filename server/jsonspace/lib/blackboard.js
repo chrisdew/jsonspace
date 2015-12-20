@@ -66,7 +66,8 @@ class Blackboard {
 
     if (type == 'query') {
       const required = require('./query/' + ob.query.code);
-      const query = new required.Query(...ob.query.args);
+      const args = ob.query.args ? ob.query.args : [];
+      const query = new required.Query(...args);
       this.pushQuery(ob.query.name, query);
     }
 
@@ -131,7 +132,7 @@ class IdGenerator {
       this._lastDate = date;
       this._counter = 0;
     }
-    return `{date.toISOString()}|{this._counter}|{this._ip}`;
+    return `${date}|${this._counter}|${this._ip}`;
   }
 }
 
