@@ -16,7 +16,7 @@ function exec(ob, put, queries) {
   // write an association for the websocket_logged_inUsernameByConn_id query to keep
   put({websocket_subscribed:{
     conn_id:ob.websocket_obj_rx.conn_id,
-    subscribed:ob.websocket_obj_rx.data.subscribe.username
+    channel:ob.websocket_obj_rx.data.subscribe.channel
   }});
 }
 

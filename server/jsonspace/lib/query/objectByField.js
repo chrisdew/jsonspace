@@ -6,9 +6,8 @@
 
 
 class Query {
-  constructor(messageType, returnField, keyField) {
+  constructor(messageType, keyField) {
     this._messageType = messageType;
-    this._returnField = returnField;
     this._keyField = keyField;
     this._objByKey = {}; // keys are channels, values are {"<conn_id>":{type, conn_id}...}
   }
@@ -27,8 +26,8 @@ class Query {
     return Object.values(this._objByKey);
   }
 
-  getResult(keyField) {
-    return klone(this._objects);
+  results(key) {
+    return this._objByKey[key];
   }
 }
 

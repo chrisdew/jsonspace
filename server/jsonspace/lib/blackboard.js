@@ -77,7 +77,8 @@ class Blackboard {
         process.nextTick(function() {
           that.put(ob)
         });
-      });
+      },
+      this._queries);
       // FIXME: semantics - should this return, or just break?
       if (drop) return;
     }
@@ -132,7 +133,7 @@ class IdGenerator {
       this._lastDate = date;
       this._counter = 0;
     }
-    return `${date}|${this._counter}|${this._ip}`;
+    return `${date}|${this._counter}|${this._ip}|${process.pid}`;
   }
 }
 
