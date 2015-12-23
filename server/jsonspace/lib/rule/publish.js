@@ -7,7 +7,6 @@
 const u = require('../util');
 
 function exec(ob, put, queries) {
-  const obName = u.firstNonIdPropertyName(ob);
   if (!ob.websocket_obj_rx.data.publish || !ob.websocket_obj_rx.data.publish.channel) return;
 
   const result = queries.websocket_logged_in$conn_id.results(ob.websocket_obj_rx.conn_id);

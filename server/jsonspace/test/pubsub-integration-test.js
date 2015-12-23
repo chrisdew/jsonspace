@@ -82,6 +82,16 @@ WrappedWebSocket.prototype.cancelExpect = function() {
   throw new Error('no rxHandler to cancel');
 };
 
+WrappedWebSocket.prototype.close = function(callback) {
+  this.log.push({close:true});
+  if (this.rxHandler) {
+    throw new Error(this.name + ': websocket had a data handler at the time of closing, expected: ' + JSON.stringify(this.expected));
+  }
+  // FIXME: ws do not seem to accept a callback
+  this.conn.close();
+  process.nextTick(callback);
+};
+
 function klone(ob) {
   return JSON.parse(JSON.stringify(ob));
 }
@@ -113,10 +123,21 @@ describe('pubsub', function() {
               {published: {username:'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
             ),
       // user_b publishes on channel_0, both user_a and user_b receive the data
-      () => conn_a.expect({published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}}, parallel()),
+      () => conn_a.expect({published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}},
+        parallel()),
       () => conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}},
               {published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
             ),
+      // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
+      // results
+      () => conn_a.close(next()),
+      // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
+      // so wait 100ms, just to make the results neat
+      () => setTimeout(next(), 100),
+      () => conn_b.send({publish: {channel: '#channel_0', data: 'third on channel 0'}},
+        {published: {username:'user_b', channel: '#channel_0', data: 'third on channel 0'}}, next()
+      ),
+      () => conn_b.close(next()),
       // the end
       () => done()
     ];

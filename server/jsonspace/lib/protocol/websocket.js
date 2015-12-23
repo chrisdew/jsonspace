@@ -21,17 +21,21 @@ function listen(ob, put) {
     put({websocket_connected:{conn_id:conn_id,tcp_conn:tcp_conn}});
     ws.on('message', (message) => {
       put({websocket_raw_rx:{conn_id:conn_id,data:message}});
-    })
-    ws.on('end', () => {
-      put({websocket_disconnected:{conn_id:conn_id,data:message}});
-    })
+    });
+    ws.on('close', () => {
+      put({websocket_disconnected:{conn_id:conn_id}});
+    });
   });
 
   // this function is given back to the blackboard to handle outgoing websocket data
   function send(ob, put) {
     const conn = conns[ob.websocket_obj_tx.conn_id];
     if (conn) {
-      conn.send(JSON.stringify(ob.websocket_obj_tx.obj));
+      conn.send(JSON.stringify(ob.websocket_obj_tx.obj),(err) => {
+        if (err) {
+          put({error: {message: 'error when sending'}, err:err, ref: ob});
+        }
+      });
     } else {
       put({error:{message:'unable to send due to non-existent conn_id'}, ref:ob});
     }

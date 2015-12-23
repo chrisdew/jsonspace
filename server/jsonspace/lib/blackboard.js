@@ -67,7 +67,7 @@ class Blackboard {
     if (type == 'query') {
       const required = require('./query/' + ob.query.code);
       const args = ob.query.args ? ob.query.args : [];
-      const query = new required.Query(...args);
+      const query = new required.Query(ob.query.name, ...args);
       this.pushQuery(ob.query.name, query);
     }
 

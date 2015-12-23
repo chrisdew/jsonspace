@@ -6,27 +6,49 @@
 
 
 class Query {
-  constructor(messageType, keyField) {
+  constructor(name, messageType, unmessageType, keyField) {
+    this._name = name;
     this._messageType = messageType;
+    this._unmessageType = unmessageType;
     this._keyField = keyField;
     this._objByKey = {}; // values are arrays of objects {"<channel>":[{websocket_subscribed:...
   }
 
-  put(ob) {
-    //console.log('ob', ob);
-    //console.log('this', this);
+  put(ob, put) {
+    // handle message and unmessages (unmessages remove messages from queries)
+
     // validate
     let message = ob[this._messageType];
-    //console.log('message', message);
-    if (!message) return;
-    let keyFieldValue = message[this._keyField];
-    //console.log('keyFieldValue', keyFieldValue);
-    if (!keyFieldValue) return;
+    if (message) {
+      let keyFieldValue = message[this._keyField];
+      if (!keyFieldValue) return;
 
-    if (!this._objByKey[keyFieldValue]) {
-      this._objByKey[keyFieldValue] = [];
+      if (!this._objByKey[keyFieldValue]) {
+        this._objByKey[keyFieldValue] = [];
+      }
+      this._objByKey[keyFieldValue].push(ob);
     }
-    this._objByKey[keyFieldValue].push(ob);
+
+    let unmessage = ob[this._unmessageType];
+    if (unmessage) {
+      let keyFieldValue = unmessage[this._keyField];
+      if (!keyFieldValue) return;
+
+      if (!this._objByKey[keyFieldValue]) {
+        this._objByKey[keyFieldValue] = [];
+      }
+      // remove any matching messages from the array
+      const array =this._objByKey[keyFieldValue];
+      // iterating backwards through arrays, when removing elements, is simple and safe
+      for (let i = array.length - 1; i >= 0; i--) {
+        // FIXME: this only work as long as the content of messages and unmessages are the same *object*
+        // it will break if they are only the same value of object
+        // TODO: find a good, fast Javascript deepEqual function
+        if (array[i][this._messageType] === unmessage) {
+          array.splice(i, 1);
+        }
+      }
+    }
   }
 
   getReferences() {

@@ -6,7 +6,8 @@
 
 
 class Query {
-  constructor(messageType, keyField) {
+  constructor(name, messageType, keyField) {
+    // FIXME: add the handling of unmessages, as is already done for objectArrayByField
     this._messageType = messageType;
     this._keyField = keyField;
     this._objByKey = {}; // keys are channels, values are {"<conn_id>":{type, conn_id}...}
