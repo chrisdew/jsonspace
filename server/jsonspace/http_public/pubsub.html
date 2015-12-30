@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>  
+    <meta charset="utf-8">  
+    <title>comms placeholder</title>  
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script>
+      var addMessage = function(message) {
+        $('<li>' + message + '</li>').appendTo('#messages');
+      };
+
+      var path_array = window.location.pathname.split('/');
+      var username = path_array[1];
+
+      var ws_url = 'ws://localhost:8888/pubsub';
+      console.log('ws_url', ws_url);
+      var sock = false;
+
+      $(function() {
+        sock = new WebSocket(ws_url);
+        sock.onopen = function() {
+          sock.send(JSON.stringify({login:{username:username}}));
+          sock.onmessage = function(message) {
+            addMessage(message.data);
+          };
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <h1>comms placeholder</h1>
+    <form><input id="subscribe_channel" type="text"><button id="subscribe">Subscribe</button></form>
+    <br/>
+    <form><input id="unsubscribe_channel" type="text"><button id="unsubscribe">Unsubscribe</button></form>
+    <br/>
+    <h2>messages:</h2>
+    <ul id="messages"></ul>
+    <form><input id="publish_channel" type="text"><input id="message" type="text"><button id="send">Send</button></form>
+  </body>
+</html>	
