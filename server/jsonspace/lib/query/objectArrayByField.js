@@ -56,7 +56,12 @@ class Query {
   }
 
   results(key) {
-    return this._objByKey[key];
+    if (this._objByKey[key]) {
+      return this._objByKey[key];
+    } else {
+      // this lets the caller avoid a null check
+      return [];
+    }
   }
 }
 

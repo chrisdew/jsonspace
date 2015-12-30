@@ -100,6 +100,7 @@ describe('pubsub', function() {
   it('should work for a simple two user test case', function(done) {
     let conn_a;
     let conn_b;
+    let conn_c; // conn_c logs in as user_a to test that subscriptions are working per-username, not per-websocket
 
     const steps = [
       // make two separate websocket connections to the server
@@ -117,20 +118,27 @@ describe('pubsub', function() {
               {published: {username:'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()
             ),
       () => conn_b.expect({published: {username:'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()),
+      // close conn_a and open conn_c for the same user
+      () => conn_a.close(next()),
+      // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
+      // so wait 100ms, just to make the results neat
+      () => setTimeout(next(), 100),
+      () => conn_c = new WrappedWebSocket('conn_c', 'ws://localhost:8888/pubsub', next()),
+      () => conn_c.send({login: {username: 'user_a'}}, {logged_in: true}, next()),
       // user_a publishes on channel_1, only user_a receives the data
       // (if user_b got a copy, it would cause a later test to fail, as this data is not expected)
-      () => conn_a.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},
+      () => conn_c.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},
               {published: {username:'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
             ),
       // user_b publishes on channel_0, both user_a and user_b receive the data
-      () => conn_a.expect({published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}},
+      () => conn_c.expect({published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}},
         parallel()),
       () => conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}},
               {published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
             ),
       // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
       // results
-      () => conn_a.close(next()),
+      () => conn_c.close(next()),
       // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
       // so wait 100ms, just to make the results neat
       () => setTimeout(next(), 100),
