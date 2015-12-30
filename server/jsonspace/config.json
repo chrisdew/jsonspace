@@ -5,9 +5,10 @@
   {"rule":{"type":"websocket_obj_rx","name":"subscribe"}},
   {"rule":{"type":"websocket_obj_rx","name":"publish"}},
   {"rule":{"type":"published","name":"publishedToSubscribers"}},
-  {"rule":{"type":"websocket_disconnected","name":"unsubscribeOnDisconnect"}},
-  {"query":{"name":"websocket_logged_in$conn_id","code":"objectByField","args":["websocket_logged_in","conn_id"]}},
-  {"query":{"name":"websocket_subscribed$channel","code":"objectArrayByField","args":["websocket_subscribed","websocket_unsubscribed","channel"]}},
-  {"query":{"name":"websocket_subscribed$conn_id","code":"objectArrayByField","args":["websocket_subscribed","websocket_unsubscribed","conn_id"]}},
+  {"rule":{"type":"websocket_disconnected","name":"loggedOutOnDisconnect"}},
+  {"query":{"name":"websocket_logged_in$conn_id","code":"objectByField","args":["websocket_logged_in","websocket_logged_out", "conn_id"]}},
+  {"query":{"name":"websocket_logged_in$username","code":"objectArrayByField","args":["websocket_logged_in","websocket_logged_out", "username"]}},
+  {"query":{"name":"subscribed$channel","code":"objectArrayByField","args":["subscribed","unsubscribed","channel"]}},
+  {"query":{"name":"subscribed$username","code":"objectArrayByField","args":["subscribed","unsubscribed","username"]}},
   {}
 ]

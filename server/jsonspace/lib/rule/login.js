@@ -13,7 +13,7 @@ function exec(ob, put, queries) {
   // client confirmation
   put({websocket_obj_tx:{conn_id:ob.websocket_obj_rx.conn_id,obj:{logged_in:true}}});
 
-  // write an association for the websocket_logged_inUsernameByConn_id query to keep
+  // write an association for the websocket_logged_in$conn_id query to keep
   put({websocket_logged_in:{
     conn_id:ob.websocket_obj_rx.conn_id,
     username:ob.websocket_obj_rx.data.login.username

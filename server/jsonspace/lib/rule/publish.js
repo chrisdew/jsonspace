@@ -9,7 +9,7 @@ const u = require('../util');
 function exec(ob, put, queries) {
   if (!ob.websocket_obj_rx.data.publish || !ob.websocket_obj_rx.data.publish.channel) return;
 
-  const result = queries.websocket_logged_in$conn_id.results(ob.websocket_obj_rx.conn_id);
+  const result = queries.websocket_logged_in$conn_id.result(ob.websocket_obj_rx.conn_id);
 
   if (!result) {
     put({websocket_obj_tx:{conn_id:ob.websocket_obj_rx.conn_id,data:{'error':'not logged in'}}});
