@@ -27,9 +27,34 @@ function WrappedWebSocket(name, url, connectedCallback) {
     this.log.push({rx:data});
     if (this.rxHandler) {
       if (this.expected) {
+        // FIXME: handle all depths, as a separate, recursive, function
         // ignore id fields
         const tmp = klone(data);
         delete tmp.id;
+        for (let p in tmp) {
+          console.log('p', p);
+          if (tmp[p] instanceof Object) {
+            delete tmp[p].id;
+            for (let q in tmp[p]) {
+              console.log('q', q);
+              if (tmp[p][q] instanceof Object) {
+                delete tmp[p][q].id;
+                for (let r in tmp[p][q]) {
+                  console.log('r', r);
+                  if (tmp[p][q][r] instanceof Object) {
+                    delete tmp[p][q][r].id;
+                    for (let s in tmp[p][q][r]) {
+                      console.log('s', s);
+                      if (tmp[p][q][r][s] instanceof Object) {
+                        delete tmp[p][q][r][s].id;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
         assert.deepEqual(this.expected, tmp);
       }
       this.rxHandler(data);
@@ -107,8 +132,8 @@ describe('pubsub', function() {
       () => conn_a = new WrappedWebSocket('conn_a', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // log in user_a on the first and user_b on the second (no auth yet)
-      () => conn_a.send({login: {username: 'user_a'}}, {logged_in: true}, parallel()),
-      () => conn_b.send({login: {username: 'user_b'}}, {logged_in: true}, next()),
+      () => conn_a.send({login: {username: 'user_a'}}, {logged_in: { recent_messages: {}}}, parallel()),
+      () => conn_b.send({login: {username: 'user_b'}}, {logged_in: { recent_messages: {}}}, next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_a.send({subscribe: {channel: '#channel_0'}}, {subscribed: {channel: '#channel_0'}}, next()),
       () => conn_b.send({subscribe: {channel: '#channel_0'}}, {subscribed: {channel: '#channel_0'}}, next()),
@@ -124,7 +149,25 @@ describe('pubsub', function() {
       // so wait 100ms, just to make the results neat
       () => setTimeout(next(), 100),
       () => conn_c = new WrappedWebSocket('conn_c', 'ws://localhost:8888/pubsub', next()),
-      () => conn_c.send({login: {username: 'user_a'}}, {logged_in: true}, next()),
+      // when user_a logs in for a second time, they should see their current subscriptions
+      () => conn_c.send({login: {username: 'user_a'}}, {
+        logged_in: {
+          recent_messages: {
+            "#channel_0": [
+              {
+                // just an example: ID's are not "expected" in integration tests as they always differ
+                // "id": "1970-01-01T00:00:00.000Z|43|127.0.0.1|1747"
+                "published": {
+                  "channel": "#channel_0",
+                  "data": "first on channel 0",
+                  "username": "user_a"
+                }
+              }
+            ],
+            "#channel_1": []
+          }
+        }
+      }, next()),
       // user_a publishes on channel_1, only user_a receives the data
       // (if user_b got a copy, it would cause a later test to fail, as this data is not expected)
       () => conn_c.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},

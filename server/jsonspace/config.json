@@ -12,6 +12,7 @@
   {"query":{"name":"websocket_logged_in$username","code":"objectArrayByField","args":["websocket_logged_in","websocket_logged_out", "username"]}},
   {"query":{"name":"subscribed$channel","code":"objectArrayByField","args":["subscribed","unsubscribed","channel"]}},
   {"query":{"name":"subscribed$username","code":"objectArrayByField","args":["subscribed","unsubscribed","username"]}},
+  {"query":{"name":"published$channel","code":"objectArrayByField","args":["published","unpublished","channel"]}},
   {"query":{"name":"http_static_content$path","code":"objectByField","args":["http_static_content","http_static_discontent", "path"]}},
   {"http_static_content":{"path":"/hello","data":"<html>Hello World</html>"}},
   {"http_static_content":{"path":"/","file":"index.html"}},

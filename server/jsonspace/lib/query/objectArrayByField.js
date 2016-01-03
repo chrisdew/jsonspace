@@ -4,14 +4,16 @@
  * Created by chris on 14/12/2015.
  */
 
-
+// FIXME: This modules needs to be replaced (for most usages) by an objectLinkedListByField or an
+// objectCircularBufferByField.
 class Query {
-  constructor(name, messageType, unmessageType, keyField) {
+  constructor(name, messageType, unmessageType, keyField, max) {
     this._name = name;
     this._messageType = messageType;
     this._unmessageType = unmessageType;
     this._keyField = keyField;
     this._objByKey = {}; // values are arrays of objects {"<channel>":[{websocket_subscribed:...
+    this._max = max;
   }
 
   put(ob, put) {
@@ -25,6 +27,11 @@ class Query {
 
       if (!this._objByKey[keyFieldValue]) {
         this._objByKey[keyFieldValue] = [];
+      }
+      if (this._max !== undefined && this._max !== null && this.max !== false) { // "max" of 0 is legal, but pointless
+        while (this._objByKey[keyFieldValue].length > this._max) { // could be an "if", but this is more robust
+          this._objByKey[keyFieldValue].shift();
+        }
       }
       this._objByKey[keyFieldValue].push(ob);
     }
