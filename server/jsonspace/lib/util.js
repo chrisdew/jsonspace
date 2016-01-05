@@ -14,5 +14,11 @@ function firstNonIdPropertyName(ob) {
   return p;
 }
 
+// make a deep clone of the object
+function klone(ob) {
+  return JSON.parse(JSON.stringify(ob));
+}
+
+exports.klone = klone;
 exports.firstNonIdPropertyName = firstNonIdPropertyName;
 

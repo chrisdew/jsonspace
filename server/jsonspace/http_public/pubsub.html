@@ -9,17 +9,19 @@
         $('<li>' + message + '</li>').appendTo('#messages');
       };
 
-      var path_array = window.location.pathname.split('/');
-      var username = path_array[2];
-
       var ws_url = 'ws://localhost:8888/pubsub';
       console.log('ws_url', ws_url);
       var sock = false;
 
       // local application state
       var local_state = {
-        recent_messages: {}
+        channels: {}, // a set of currently subscribed channels
+        username: null
       };
+
+      var path_array = window.location.pathname.split('/');
+      local_state.username = path_array[2];
+
 
       // this function is overridden, once the socket has connected
       var send = function(data) {
@@ -37,7 +39,6 @@
             $('#comms_log').append('<li>sent:' + data + '</li>');
             sock.send(data);
           };
-          send(JSON.stringify({login:{username:username}}));
           sock.onmessage = function(message) {
             $('#comms_log').append('<li>rx:' + message.data + '</li>');
             var data = JSON.parse(message.data);
@@ -48,36 +49,32 @@
 
       function handleMessageData(data) {
         console.log('message data:', data);
-        if (data.logged_in) return handleLoggedIn(data.logged_in);
         if (data.subscribed) return handleSubscribed(data.subscribed);
         if (data.unsubscribed) return handleUnsubscribed(data.unsubscribed);
         if (data.published) return handlePublished(data.published, data);
         console.log('unhandled message data: ' + JSON.stringify(data));
       }
 
-      function handleLoggedIn(logged_in) {
-        local_state.recent_messages = logged_in.recent_messages;
-        refreshDisplay(local_state);
-      }
-
       function handleSubscribed(subscribed) {
-        if (!local_state.recent_messages[subscribed.channel]) {
-          local_state.recent_messages[subscribed.channel] = [];
-          refreshDisplay(this.local_state);
+        if (subscribed.username === local_state.username) {
+          if (!local_state.channels[subscribed.channel]) {
+            local_state.channels[subscribed.channel] = true;
+            refreshDisplay(this.local_state);
+          }
         }
       }
 
       function handleUnsubscribed(unsubscribed) {
-        if (!local_state.recent_messages[unsubscribed.channel]) {
-          delete local_state.recent_messages[unsubscribed.channel];
-          refreshDisplay(local_state);
+        if (unsubscribed.username === local_state.username) {
+          if (!local_state.channels[unsubscribed.channel]) {
+            delete local_state.channels[unsubscribed.channel];
+            refreshDisplay(local_state);
+          }
         }
       }
 
       function handlePublished(published, whole) {
-        // add to the recent_messages local_state
-        local_state.recent_messages[published.channel].push(whole);
-        refreshDisplay(local_state);
+        // not maintaining a display separate from the comms_log anymore
       }
 
       // A very weak substitute for ReactJS
@@ -85,25 +82,15 @@
         // add the channel options to the publish_channel select
         var select = $('#publish_channel');
         select.empty(); // remove existing options
-        for (var channel in local_state.recent_messages) {
+        for (var channel in local_state.channels) {
           select.append('<option value="' + channel + '">' + channel + '</option>');
-        }
-
-        // add the publisheds, in "id" order
-        // FIXME: need to add a timestamp field to "published"
-        var publisheds = $('#publisheds');
-        publisheds.empty(); // remove existing messages
-        for (var channel in local_state.recent_messages) {
-          for (var i in local_state.recent_messages[channel]) {
-            publisheds.append('<li>' + JSON.stringify(local_state.recent_messages[channel][i]) + '</li>');
-          }
         }
       }
 
       function handleSubscribeButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#subscribe_channel').val();
-        send(JSON.stringify({subscribe:{channel:channel}}));
+        send(JSON.stringify({subscribe:{username:local_state.username,channel:channel}}));
         $('#subscribe_channel').val('');
       }
 
@@ -128,9 +115,6 @@
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <p>(unsubscribe coming soon...)</p>
-    <br/>
-    <h2>published content:</h2>
-    <ul id="publisheds"></ul>
     <br/>
     <h2>publish a new message</h2>
     <form>
