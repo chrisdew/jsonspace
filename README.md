@@ -48,12 +48,4 @@ Licensing
 
 JSON Space client code is licensed under the MIT license, so that it does not add any open-source obligations to the mobile, desktop or web apps which incorporate it.
 
-The JSON Space server code is licensed under the AGPLv3 - the server code includes a URL from where the server code may be downloaded.
-
-If your organisation would like to use and extend the server code, without serving your source code back to the community, please [contact us](mailto:jsonspace_licensing@barricane.com) - we are happy to discuss commercial licensing costs. 
- 
-
-Hosting
--------
-
-[Barricane Technology Ltd.](http://www.barricane.com) are the authors and current custodians of JSON Space.  We can offer you a competitive hosted solution.  [Contact us](mailto:jsonspace_hosting@barricane.com).
+The JSON Space server code is licensed under the AGPLv3 - the server code will include a URL from where the server code may be downloaded.
