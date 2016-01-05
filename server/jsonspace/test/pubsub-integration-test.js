@@ -131,10 +131,16 @@ describe('pubsub', function() {
       () => conn_a = new WrappedWebSocket('conn_a', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
-      () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {subscribed: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, next()),
+      () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {
+        subscribed: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0', others:{}}
+      }, next()),
       () => conn_a.expect({subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, parallel()),
-      () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, next()),
-      () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {subscribed: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, next()),
+      () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {
+        subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0', others: {user_a: {extra: "a_on_0"}}}
+      }, next()),
+      () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
+        subscribed: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1', others: {}}
+      }, next()),
       // user_a publishes on channel_0, both user_a and user_b receive the data
       () => conn_b.expect({published: {username:'user_a', channel: '#channel_0', data: 'first on channel 0'}}, parallel()),
       () => conn_a.send({publish: {channel: '#channel_0', data: 'first on channel 0'}},

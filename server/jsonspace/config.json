@@ -17,5 +17,6 @@
   {"http_static_content":{"path":"/","file":"index.html"}},
   {"http_static_content":{"path":"/pubsub/user_a","file":"pubsub.html"}},
   {"http_static_content":{"path":"/pubsub/user_b","file":"pubsub.html"}},
+  {"http_static_content":{"path":"/pubsub/user_c","file":"pubsub.html"}},
   {}
 ]

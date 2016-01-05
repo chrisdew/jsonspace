@@ -31,7 +31,6 @@
       $(function() {
         sock = new WebSocket(ws_url);
         // TODO: add websocket reconnection logic
-        // TODO: add websocket error handling
         sock.onopen = function() {
           $('#comms_log').append('<li>connected:' + ws_url + '</li>');
           // a send function, to aid logging
@@ -44,6 +43,14 @@
             var data = JSON.parse(message.data);
             handleMessageData(data);
           };
+        };
+        sock.onclose = function() {
+          $('#comms_log').append('<li>websocket closed by server, please refresh page to continue</li>');
+          send = function(data) { $('#comms_log').append('<li>cannot send:' + data + ', due to socket closure</li>'); };
+        };
+        sock.onerror = function(err) {
+          $('#comms_log').append('<li>websocket error: ' + err + '</li>');
+          send = function(data) { $('#comms_log').append('<li>cannot send:' + data + ', due to socket error</li>'); };
         };
       });
 
@@ -90,8 +97,10 @@
       function handleSubscribeButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#subscribe_channel').val();
-        send(JSON.stringify({subscribe:{username:local_state.username,channel:channel}}));
+        var extra = $('#subscribe_extra').val();
+        send(JSON.stringify({subscribe:{username:local_state.username,channel:channel,extra:extra}}));
         $('#subscribe_channel').val('');
+        $('#subscribe_extra').val('');
       }
 
       function handlePublishButtonClick() {
@@ -112,6 +121,7 @@
     <h2>subscribe to a new channel</h2>
     <form>
       <input id="subscribe_channel" type="text">
+      <input id="subscribe_extra" type="text">
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <p>(unsubscribe coming soon...)</p>
