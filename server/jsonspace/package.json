@@ -18,8 +18,21 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
+    "ws": "^0.8.1"
+  },
+  "devDependencies": {
     "mocha": "^2.3.4",
-    "ws": "^0.8.1",
     "wscat": "^1.0.1"
+  },
+  "engines": {
+    "node" : ">=5.1.0 <6.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "scripts": {
+    "start": "node jsonspace.js",
+    "test": "./node_modules/.bin/mocha"
   }
 }
