@@ -122,7 +122,7 @@ function klone(ob) {
 }
 
 describe('pubsub', function() {
-  it('should work for a simple two user test case', function(done) {
+  it('should work for a simple two user test case', function (done) {
     let conn_a;
     let conn_b;
 
@@ -132,7 +132,7 @@ describe('pubsub', function() {
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {
-        subscribed: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0', others:{}}
+        subscribed: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0', others: {}}
       }, next()),
       () => conn_a.expect({subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, parallel()),
       () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {
@@ -142,36 +142,117 @@ describe('pubsub', function() {
         subscribed: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1', others: {}}
       }, next()),
       // user_a publishes on channel_0, both user_a and user_b receive the data
-      () => conn_b.expect({published: {username:'user_a', channel: '#channel_0', data: 'first on channel 0'}}, parallel()),
+      () => conn_b.expect({
+        published: {
+          username: 'user_a',
+          channel: '#channel_0',
+          data: 'first on channel 0'
+        }
+      }, parallel()),
       () => conn_a.send({publish: {channel: '#channel_0', data: 'first on channel 0'}},
-              {published: {username:'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()
-            ),
+        {published: {username: 'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()
+      ),
       // user_a publishes on channel_1, only user_a receives the data
       // (if user_b got a copy, it would cause a later test to fail, as this data is not expected)
       () => conn_a.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},
-              {published: {username:'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
-            ),
+        {published: {username: 'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
+      ),
       // user_b publishes on channel_0, both user_a and user_b receive the data
-      () => conn_a.expect({published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}},
+      () => conn_a.expect({published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}},
         parallel()),
       () => conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}},
-              {published: {username:'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
-            ),
+        {published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
+      ),
+      () => conn_b.send({watch: {channel: '#channel_1'}}, {
+        watched: {
+          channel: "#channel_1", others: {
+            user_a: {extra: "a_on_1"}
+          }
+        }
+      }, next()),
       // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
       // results
-      () => conn_b.expect({unsubscribed: {username:'user_a', channel: '#channel_0', extra: 'a_on_0'}}, parallel()),
+      () => conn_b.expect({unsubscribed: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, parallel()),
       () => conn_a.close(next()),
+      // TODO: find a way to let a connection expect more than one message, as the line below would make more sense
+      // if placed earlier
+      () => conn_b.expect({unsubscribed: {username: "user_a", channel: "#channel_1", extra: "a_on_1"}}, next()),
       // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
       // so wait 100ms, just to make the results neat
       () => setTimeout(next(), 100),
       () => conn_b.send({publish: {channel: '#channel_0', data: 'third on channel 0'}},
-        {published: {username:'user_b', channel: '#channel_0', data: 'third on channel 0'}}, next()
+        {published: {username: 'user_b', channel: '#channel_0', data: 'third on channel 0'}}, next()
       ),
       () => conn_b.close(next()),
       // the end
       done
     ];
 
+    // run the async actions in sequence
+    let i = 0;
+    let outstanding = 1;
+
+    function next() {
+      outstanding++;
+      return possiblyContinue;
+    }
+
+    function possiblyContinue() {
+      assert(outstanding > 0);
+      outstanding--;
+      if (outstanding === 0) {
+        process.nextTick(steps[i]);
+        //console.log(`running ${i}: ${steps[i]}`);
+        i++;
+      } else {
+        console.log(`waiting for ${outstanding} more callbacks before continuing`);
+      }
+    }
+
+    // and allow some actions to run in parallel with others
+    function parallel() {
+      outstanding++;
+      process.nextTick(steps[i]); // run the next step, in parallel
+      //console.log(`parallel running ${i}: ${steps[i]}`);
+      i++;
+      return possiblyContinue;
+    }
+
+    possiblyContinue(); // start running steps
+
+  });
+});
+
+describe('watch', function() {
+  it('should work', function(done) {
+    let conn_c;
+    let conn_d;
+
+    const steps = [
+      // make two separate websocket connections to the server
+      () => conn_c = new WrappedWebSocket('conn_c', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_d = new WrappedWebSocket('conn_d', 'ws://localhost:8888/pubsub', next()),
+      // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
+      () => conn_c.send({watch: {channel: '#channel_2'}}, {
+        watched: {channel: '#channel_2', others: {}}
+      }, next()),
+      () => conn_c.expect({subscribed: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
+      () => conn_d.send({subscribe: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, {
+        subscribed: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2', others: {}}
+      }, next()),
+      // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
+      // results
+      () => conn_c.expect({unsubscribed: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
+      () => conn_d.close(next()),
+      // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
+      // so wait 100ms, just to make the results neat
+      () => setTimeout(next(), 100),
+      () => conn_c.close(next()),
+      // the end
+      done
+    ];
+
+    // TODO: turn next and parallel into a module
     // run the async actions in sequence
     let i = 0;
     let outstanding = 1;
@@ -201,5 +282,6 @@ describe('pubsub', function() {
     possiblyContinue(); // start running steps
 
   });
+
 });
 

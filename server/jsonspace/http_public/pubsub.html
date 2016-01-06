@@ -103,6 +103,13 @@
         $('#subscribe_extra').val('');
       }
 
+      function handleWatchButtonClick() {
+        console.log('handleWatchButtonClick');
+        var channel = $('#watch_channel').val();
+        send(JSON.stringify({watch:{channel:channel}}));
+        $('#watch_channel').val('');
+      }
+
       function handlePublishButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#publish_channel').val();
@@ -125,6 +132,13 @@
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <p>(unsubscribe coming soon...)</p>
+    <br/>
+    <h2>watch a new channel</h2>
+    <form>
+      <input id="watch_channel" type="text">
+      <button id="watch" onclick="handleWatchButtonClick(); return false;">Watch</button>
+    </form>
+    <p>(unwatch coming soon...)</p>
     <br/>
     <h2>publish a new message</h2>
     <form>
