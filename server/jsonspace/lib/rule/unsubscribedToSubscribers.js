@@ -12,6 +12,9 @@ function exec(ob, put, queries) {
     const redacted = u.klone(ob);
     delete redacted.unsubscribed.conn_id; // don't leak connection data
 
+    // skip the conn_id which is unsubscribing, as the message would fail anyway...
+    if (ob.unsubscribed.conn_id === result.subscribed.conn_id) continue;
+
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
 }
