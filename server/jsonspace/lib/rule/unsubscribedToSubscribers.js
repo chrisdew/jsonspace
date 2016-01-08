@@ -13,7 +13,8 @@ function exec(ob, put, queries) {
   const results = queries.subscribed$channel.results(ob.unsubscribed.channel);
   for (const result of results) {
     // skip the conn_id which is unsubscribing, as the message would fail anyway...
-    if (ob.unsubscribed.conn_id === result.subscribed.conn_id) continue;
+    // FIXME: don;t skip sending it, as the client may be unsubscribing without disconnecting
+    //if (ob.unsubscribed.conn_id === result.subscribed.conn_id) continue;
 
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }

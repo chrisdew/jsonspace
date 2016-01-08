@@ -5,6 +5,8 @@
   {"rule":{"type":"websocket_obj_rx","name":"subscribe"}},
   {"rule":{"type":"websocket_obj_rx","name":"publish"}},
   {"rule":{"type":"websocket_obj_rx","name":"watch"}},
+  {"rule":{"type":"websocket_obj_rx","name":"unwatch"}},
+  {"rule":{"type":"websocket_obj_rx","name":"unsubscribe"}},
   {"rule":{"type":"subscribed","name":"subscribedToSubscribers"}},
   {"rule":{"type":"published","name":"publishedToSubscribers"}},
   {"rule":{"type":"unsubscribed","name":"unsubscribedToSubscribers"}},

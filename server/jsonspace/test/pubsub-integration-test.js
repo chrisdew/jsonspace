@@ -219,7 +219,6 @@ describe('pubsub', function() {
     }
 
     possiblyContinue(); // start running steps
-
   });
 });
 
@@ -232,7 +231,6 @@ describe('watch', function() {
       // make two separate websocket connections to the server
       () => conn_c = new WrappedWebSocket('conn_c', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_d = new WrappedWebSocket('conn_d', 'ws://localhost:8888/pubsub', next()),
-      // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_c.send({watch: {channel: '#channel_2'}}, {
         watched: {channel: '#channel_2', others: {}}
       }, next()),
@@ -283,5 +281,120 @@ describe('watch', function() {
 
   });
 
+  describe('unsubscribe', function() {
+    it('should work', function(done) {
+      let conn_e;
+      let conn_f;
+
+      const steps = [
+        // make two separate websocket connections to the server
+        () => conn_e = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
+        () => conn_f = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
+        () => conn_e.send({watch: {channel: '#channel_3'}}, {
+          watched: {channel: '#channel_3', others: {}}
+        }, next()),
+        () => conn_e.expect({subscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
+        () => conn_f.send({subscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, {
+          subscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3', others: {}}
+        }, next()),
+        () => conn_e.expect({unsubscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
+        () => conn_f.send({unsubscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, {
+          unsubscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}
+        }, next()),
+        () => conn_e.close(next()),
+        () => conn_f.close(next()),
+        // the end
+        done
+      ];
+
+      // TODO: turn next and parallel into a module
+      // run the async actions in sequence
+      let i = 0;
+      let outstanding = 1;
+      function next() {
+        outstanding++;
+        return possiblyContinue;
+      }
+      function possiblyContinue() {
+        assert(outstanding > 0);
+        outstanding--;
+        if (outstanding === 0) {
+          process.nextTick(steps[i]);
+          //console.log(`running ${i}: ${steps[i]}`);
+          i++;
+        } else {
+          console.log(`waiting for ${outstanding} more callbacks before continuing`);
+        }
+      }
+      // and allow some actions to run in parallel with others
+      function parallel() {
+        outstanding++;
+        process.nextTick(steps[i]); // run the next step, in parallel
+        //console.log(`parallel running ${i}: ${steps[i]}`);
+        i++;
+        return possiblyContinue;
+      }
+      possiblyContinue(); // start running steps
+
+    });
+  });
+
+  describe('unwatch', function() {
+    it('should work', function(done) {
+      let conn_g;
+      let conn_h;
+
+      const steps = [
+        // make two separate websocket connections to the server
+        () => conn_g = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
+        () => conn_h = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
+        () => conn_g.send({watch: {channel: '#channel_4'}}, {
+          watched: {channel: '#channel_4', others: {}}
+        }, next()),
+        () => conn_g.send({unwatch: {channel: '#channel_4'}}, {
+          unwatched: {channel: '#channel_4'}
+        }, next()),
+        // conn_h should receive nothing in response to conn_h subscribing, as it has unwatched
+        () => conn_g.wait(100, parallel()),
+        () => conn_h.send({subscribe: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4'}}, {
+          subscribed: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4', others: {}}
+        }, next()),
+        () => conn_g.close(next()),
+        () => conn_h.close(next()),
+        // the end
+        done
+      ];
+
+      // TODO: turn next and parallel into a module
+      // run the async actions in sequence
+      let i = 0;
+      let outstanding = 1;
+      function next() {
+        outstanding++;
+        return possiblyContinue;
+      }
+      function possiblyContinue() {
+        assert(outstanding > 0);
+        outstanding--;
+        if (outstanding === 0) {
+          process.nextTick(steps[i]);
+          //console.log(`running ${i}: ${steps[i]}`);
+          i++;
+        } else {
+          console.log(`waiting for ${outstanding} more callbacks before continuing`);
+        }
+      }
+      // and allow some actions to run in parallel with others
+      function parallel() {
+        outstanding++;
+        process.nextTick(steps[i]); // run the next step, in parallel
+        //console.log(`parallel running ${i}: ${steps[i]}`);
+        i++;
+        return possiblyContinue;
+      }
+      possiblyContinue(); // start running steps
+
+    });
+  });
 });
 

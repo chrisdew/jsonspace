@@ -16,6 +16,7 @@
       // local application state
       var local_state = {
         channels: {}, // a set of currently subscribed channels
+        watches: {}, // a set of currently watched channels
         username: null
       };
 
@@ -59,6 +60,8 @@
         if (data.subscribed) return handleSubscribed(data.subscribed);
         if (data.unsubscribed) return handleUnsubscribed(data.unsubscribed);
         if (data.published) return handlePublished(data.published, data);
+        if (data.watched) return handleWatched(data.watched);
+        if (data.unwatched) return handleUnwatched(data.unwatched);
         console.log('unhandled message data: ' + JSON.stringify(data));
       }
 
@@ -73,10 +76,24 @@
 
       function handleUnsubscribed(unsubscribed) {
         if (unsubscribed.username === local_state.username) {
-          if (!local_state.channels[unsubscribed.channel]) {
+          if (local_state.channels[unsubscribed.channel]) {
             delete local_state.channels[unsubscribed.channel];
             refreshDisplay(local_state);
           }
+        }
+      }
+
+      function handleWatched(watched) {
+        if (!local_state.watches[watched.channel]) {
+          local_state.watches[watched.channel] = true;
+          refreshDisplay(this.local_state);
+        }
+      }
+
+      function handleUnwatched(unwatched) {
+        if (local_state.watches[unwatched.channel]) {
+          delete local_state.watches[unwatched.channel];
+          refreshDisplay(local_state);
         }
       }
 
@@ -86,12 +103,17 @@
 
       // A very weak substitute for ReactJS
       function refreshDisplay(local_state) {
-        // add the channel options to the publish_channel select
-        var select = $('#publish_channel');
-        select.empty(); // remove existing options
-        for (var channel in local_state.channels) {
-          select.append('<option value="' + channel + '">' + channel + '</option>');
-        }
+        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel'];
+        var options = [local_state.channels, local_state.channels, local_state.watches];
+        for (var i in ids) {
+          var id = ids[i];
+          // add the channel options to the select
+          var select = $(id);
+          select.empty(); // remove existing options
+          for (var channel in options[i]) {
+            select.append('<option value="' + channel + '">' + channel + '</option>');
+          }
+        };
       }
 
       function handleSubscribeButtonClick() {
@@ -103,11 +125,23 @@
         $('#subscribe_extra').val('');
       }
 
+      function handleUnsubscribeButtonClick() {
+        console.log('handleUnsubscribeButtonClick');
+        var channel = $('#unsubscribe_channel').val();
+        send(JSON.stringify({unsubscribe:{username:local_state.username,channel:channel}}));
+      }
+
       function handleWatchButtonClick() {
         console.log('handleWatchButtonClick');
         var channel = $('#watch_channel').val();
         send(JSON.stringify({watch:{channel:channel}}));
         $('#watch_channel').val('');
+      }
+
+      function handleUnwatchButtonClick() {
+        console.log('handleUnwtachButtonClick');
+        var channel = $('#unwatch_channel').val();
+        send(JSON.stringify({unwatch:{channel:channel}}));
       }
 
       function handlePublishButtonClick() {
@@ -131,18 +165,30 @@
       <input id="subscribe_extra" type="text">
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
-    <p>(unsubscribe coming soon...)</p>
+    <br/>
+    <h2>unsubscribe from a channel</h2>
+    <form>
+      <select id="unsubscribe_channel"></select>
+      <button id="unsubscribe" onclick="handleUnsubscribeButtonClick(); return false;">Unsubscribe</button>
+    </form>
+    <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
     <br/>
     <h2>watch a new channel</h2>
     <form>
       <input id="watch_channel" type="text">
       <button id="watch" onclick="handleWatchButtonClick(); return false;">Watch</button>
     </form>
-    <p>(unwatch coming soon...)</p>
+    <br/>
+    <h2>unwatch a channel</h2>
+    <form>
+      <select id="unwatch_channel"></select>
+      <button id="unwatch" onclick="handleUnwatchButtonClick(); return false;">Unwatch</button>
+    </form>
+    <p>(if the select box has no options, you have not yet watched any channels, since the server was started)</p>
     <br/>
     <h2>publish a new message</h2>
     <form>
-      <select id="publish_channel">
+      <select id="publish_channel"></select>
       <input id="message" type="text">
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
     </form>
