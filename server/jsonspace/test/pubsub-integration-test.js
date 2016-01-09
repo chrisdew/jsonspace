@@ -132,14 +132,14 @@ describe('pubsub', function() {
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_0', list:[]}
       }, next()),
       () => conn_a.expect({subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, parallel()),
       () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {
-        subscribers: [{username: "user_a", extra: "a_on_0"}]
+        subscribers: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}]}
       }, next()),
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_1', list:[]}
       }, next()),
       // user_a publishes on channel_0, both user_a and user_b receive the data
       () => conn_b.expect({
@@ -164,7 +164,7 @@ describe('pubsub', function() {
         {published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
       ),
       () => conn_b.send({watch: {username: "user_b", channel: '#channel_1'}}, {
-        subscribers: [{username: "user_a", extra: "a_on_1"}]
+        subscribers: {channel: "#channel_1", list:[{username: "user_a", extra: "a_on_1"}]}
       }, next()),
       // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
       // results
@@ -228,11 +228,11 @@ describe('watch', function() {
       () => conn_c = new WrappedWebSocket('conn_c', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_d = new WrappedWebSocket('conn_d', 'ws://localhost:8888/pubsub', next()),
       () => conn_c.send({watch: {username: "user_c", channel: '#channel_2'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_2', list:[]}
       }, next()),
       () => conn_c.expect({subscribed: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
       () => conn_d.send({subscribe: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_2', list:[]}
       }, next()),
       // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
       // results
@@ -292,11 +292,11 @@ describe('unsubscribe', function() {
       () => conn_e = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_f = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
       () => conn_e.send({watch: {username: "user_e", channel: '#channel_3'}}, {
-        subscribers:[]
+        subscribers:{channel: '#channel_3', list:[]}
       }, next()),
       () => conn_e.expect({subscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => conn_f.send({subscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, {
-        subscribers:[]
+        subscribers:{channel: '#channel_3', list:[]}
       }, next()),
       () => conn_e.expect({unsubscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => { conn_f.send({unsubscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}); next()(); },
@@ -348,13 +348,13 @@ describe('unwat_ch', function() {
       () => conn_g = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_h = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
       () => conn_g.send({watch: {username: "user_g", channel: '#channel_4'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_4', list:[]}
       }, next()),
       () => { conn_g.send({unwatch: {username: "user_g", channel: '#channel_4'}}); next()(); },
       // conn_h should receive nothing in response to conn_h subscribing, as it has unwatched
       () => conn_g.wait(100, parallel()),
       () => conn_h.send({subscribe: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4'}}, {
-        subscribers: []
+        subscribers: {channel: '#channel_4', list:[]}
       }, next()),
       () => conn_g.close(next()),
       () => conn_h.close(next()),
