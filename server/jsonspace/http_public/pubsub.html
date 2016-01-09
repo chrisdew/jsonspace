@@ -56,49 +56,35 @@
       });
 
       function handleMessageData(data) {
-        console.log('message data:', data);
-        if (data.subscribed) return handleSubscribed(data.subscribed);
-        if (data.unsubscribed) return handleUnsubscribed(data.unsubscribed);
-        if (data.published) return handlePublished(data.published, data);
-        if (data.watched) return handleWatched(data.watched);
-        if (data.unwatched) return handleUnwatched(data.unwatched);
-        console.log('unhandled message data: ' + JSON.stringify(data));
+        // we no longer base any logic on received messages
       }
 
-      function handleSubscribed(subscribed) {
-        if (subscribed.username === local_state.username) {
-          if (!local_state.channels[subscribed.channel]) {
-            local_state.channels[subscribed.channel] = true;
-            refreshDisplay(this.local_state);
-          }
-        }
-      }
-
-      function handleUnsubscribed(unsubscribed) {
-        if (unsubscribed.username === local_state.username) {
-          if (local_state.channels[unsubscribed.channel]) {
-            delete local_state.channels[unsubscribed.channel];
-            refreshDisplay(local_state);
-          }
-        }
-      }
-
-      function handleWatched(watched) {
-        if (!local_state.watches[watched.channel]) {
-          local_state.watches[watched.channel] = true;
+      function addToChannels(channel) {
+        if (!local_state.channels[channel]) {
+          local_state.channels[channel] = true;
           refreshDisplay(this.local_state);
         }
       }
 
-      function handleUnwatched(unwatched) {
-        if (local_state.watches[unwatched.channel]) {
-          delete local_state.watches[unwatched.channel];
+      function removeFromChannels(channel) {
+        if (local_state.channels[channel]) {
+          delete local_state.channels[channel];
           refreshDisplay(local_state);
         }
       }
 
-      function handlePublished(published, whole) {
-        // not maintaining a display separate from the comms_log anymore
+      function addToWatched(channel) {
+        if (!local_state.watches[channel]) {
+          local_state.watches[channel] = true;
+          refreshDisplay(this.local_state);
+        }
+      }
+
+      function removeFromWatched(channel) {
+        if (local_state.watches[channel]) {
+          delete local_state.watches[channel];
+          refreshDisplay(local_state);
+        }
       }
 
       // A very weak substitute for ReactJS
@@ -123,25 +109,33 @@
         send(JSON.stringify({subscribe:{username:local_state.username,channel:channel,extra:extra}}));
         $('#subscribe_channel').val('');
         $('#subscribe_extra').val('');
+        addToChannels(channel);
+        removeFromWatched(channel);
       }
 
       function handleUnsubscribeButtonClick() {
         console.log('handleUnsubscribeButtonClick');
         var channel = $('#unsubscribe_channel').val();
         send(JSON.stringify({unsubscribe:{username:local_state.username,channel:channel}}));
+        removeFromChannels(channel);
+        removeFromWatched(channel);
       }
 
       function handleWatchButtonClick() {
         console.log('handleWatchButtonClick');
         var channel = $('#watch_channel').val();
-        send(JSON.stringify({watch:{channel:channel}}));
+        send(JSON.stringify({watch:{username:local_state.username,channel:channel}}));
         $('#watch_channel').val('');
+        removeFromChannels(channel);
+        addToWatched(channel);
       }
 
       function handleUnwatchButtonClick() {
         console.log('handleUnwtachButtonClick');
         var channel = $('#unwatch_channel').val();
         send(JSON.stringify({unwatch:{channel:channel}}));
+        removeFromChannels(channel);
+        removeFromWatched(channel);
       }
 
       function handlePublishButtonClick() {
