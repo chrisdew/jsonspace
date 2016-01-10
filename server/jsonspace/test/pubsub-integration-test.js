@@ -392,5 +392,73 @@ describe('unwat_ch', function() {
     possiblyContinue(); // start running steps
 
   });
+
+  describe('multisub', function() {
+    it('should work', function(done) {
+      let conn_i;
+      let conn_j;
+      let conn_k;
+
+      const steps = [
+        // make two separate websocket connections to the server
+        () => conn_i = new WrappedWebSocket('conn_i', 'ws://localhost:8888/pubsub', parallel()),
+        () => conn_j = new WrappedWebSocket('conn_j', 'ws://localhost:8888/pubsub', parallel()),
+        () => conn_k = new WrappedWebSocket('conn_k', 'ws://localhost:8888/pubsub', next()),
+        () => conn_i.send({watch: {username: "user_i", channel: '#channel_5'}}, {
+          subscribers: {channel: '#channel_5', list:[]}
+        }, next()),
+        () => conn_i.expect({subscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
+        () => conn_j.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
+          subscribers: {channel: '#channel_5', list:[]}
+        }, next()),
+        // conn_i should not be told about the new subscription, as it is being made by user_j, who has already subscribed
+        () => conn_i.wait(100, parallel()),
+        () => conn_k.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
+          subscribers: {channel: '#channel_5', list:[{username: 'user_j', extra: 'j_on_5'}]}
+        }, next()),
+        // conn_i should not be told about the new unsubscribe, as it is being made by user_j, who has still has a one subscription left
+        () => conn_i.wait(100, parallel()),
+        () => { conn_j.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
+        // conn_i shoulde be told about the *final* unsubscription of user_j
+        () => conn_i.expect({unsubscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
+        () => { conn_k.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
+        () => conn_i.close(next()),
+        () => conn_j.close(next()),
+        () => conn_k.close(next()),
+        // the end
+        done
+      ];
+
+      // TODO: turn next and parallel into a module
+      // run the async actions in sequence
+      let i = 0;
+      let outstanding = 1;
+      function next() {
+        outstanding++;
+        return possiblyContinue;
+      }
+      function possiblyContinue() {
+        assert(outstanding > 0);
+        outstanding--;
+        if (outstanding === 0) {
+          process.nextTick(steps[i]);
+          //console.log(`running ${i}: ${steps[i]}`);
+          i++;
+        } else {
+          console.log(`waiting for ${outstanding} more callbacks before continuing`);
+        }
+      }
+      // and allow some actions to run in parallel with others
+      function parallel() {
+        outstanding++;
+        process.nextTick(steps[i]); // run the next step, in parallel
+        //console.log(`parallel running ${i}: ${steps[i]}`);
+        i++;
+        return possiblyContinue;
+      }
+      possiblyContinue(); // start running steps
+
+    });
+  });
 });
 

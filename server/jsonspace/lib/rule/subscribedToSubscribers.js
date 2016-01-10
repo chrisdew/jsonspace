@@ -9,8 +9,14 @@ function exec(ob, put, queries) {
   const redacted = u.klone(ob);
   delete redacted.subscribed.conn_id; // don't leak connection data
 
-  // FIXME: if this is not the first subscription for the username/channel combo, don't bother to inform
+  // if this is not the first subscription for the username/channel combo, don't bother to inform
   // other subscribers/watchers
+  const usernameResults = queries.subscribed$channel.results(ob.subscribed.channel);
+  let num_for_username = 0;
+  for (const result of usernameResults) {
+    if (result.subscribed.username === ob.subscribed.username) num_for_username++;
+  }
+  if (num_for_username > 0) return;
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.subscribed.channel);

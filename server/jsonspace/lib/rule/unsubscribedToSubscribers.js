@@ -9,8 +9,18 @@ function exec(ob, put, queries) {
   const redacted = u.klone(ob);
   delete redacted.unsubscribed.conn_id; // don't leak connection data
 
-  // FIXME: if this is not the last subscription for the username/channel combo, don't bother to inform
+  // if this is not the first subscription for the username/channel combo, don't bother to inform
   // other subscribers/watchers
+  const usernameResults = queries.subscribed$channel.results(ob.unsubscribed.channel);
+  let num_for_username = 0;
+  for (const result of usernameResults) {
+    if (result.subscribed.username === ob.unsubscribed.username) num_for_username++;
+  }
+  // note: we have to check for "> 1" as this unsubscribe message will not remove the subscribed event from the
+  // query until *after* this code has been run
+  if (num_for_username > 1) return;
+
+  console.log('###');
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.unsubscribed.channel);
