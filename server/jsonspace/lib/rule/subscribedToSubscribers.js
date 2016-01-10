@@ -13,10 +13,18 @@ function exec(ob, put, queries) {
   // other subscribers/watchers
   const usernameResults = queries.subscribed$channel.results(ob.subscribed.channel);
   let num_for_username = 0;
+  let old_extra;
   for (const result of usernameResults) {
     if (result.subscribed.username === ob.subscribed.username) num_for_username++;
+    old_extra = result.subscribed.extra;
   }
-  if (num_for_username > 0) return;
+  if (num_for_username > 0) {
+    // if the "extra" field has changed, make it known
+    if (!u.deepEqual(old_extra, ob.subscribed.extra)) {
+      put({updated_extra:ob.subscribed});
+    }
+    return;
+  }
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.subscribed.channel);

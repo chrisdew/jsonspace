@@ -61,7 +61,7 @@ function WrappedWebSocket(name, url, connectedCallback) {
       this.rxHandler = false;
       this.expected = false;
     } else {
-      throw new Error('unexpected data: ' + JSON.stringify(data));
+      throw new Error(this.name + ' unexpected data: ' + JSON.stringify(data));
     }
   });
 }
@@ -339,7 +339,7 @@ describe('unsubscribe', function() {
 });
 
 describe('unwat_ch', function() {
-  it('should work', function(done) {
+  it('should work', function (done) {
     let conn_g;
     let conn_h;
 
@@ -348,16 +348,91 @@ describe('unwat_ch', function() {
       () => conn_g = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
       () => conn_h = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
       () => conn_g.send({watch: {username: "user_g", channel: '#channel_4'}}, {
-        subscribers: {channel: '#channel_4', list:[]}
+        subscribers: {channel: '#channel_4', list: []}
       }, next()),
-      () => { conn_g.send({unwatch: {username: "user_g", channel: '#channel_4'}}); next()(); },
+      () => {
+        conn_g.send({unwatch: {username: "user_g", channel: '#channel_4'}});
+        next()();
+      },
       // conn_h should receive nothing in response to conn_h subscribing, as it has unwatched
       () => conn_g.wait(100, parallel()),
       () => conn_h.send({subscribe: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4'}}, {
-        subscribers: {channel: '#channel_4', list:[]}
+        subscribers: {channel: '#channel_4', list: []}
       }, next()),
       () => conn_g.close(next()),
       () => conn_h.close(next()),
+      // the end
+      done
+    ];
+
+    // TODO: turn next and parallel into a module
+    // run the async actions in sequence
+    let i = 0;
+    let outstanding = 1;
+
+    function next() {
+      outstanding++;
+      return possiblyContinue;
+    }
+
+    function possiblyContinue() {
+      assert(outstanding > 0);
+      outstanding--;
+      if (outstanding === 0) {
+        process.nextTick(steps[i]);
+        //console.log(`running ${i}: ${steps[i]}`);
+        i++;
+      } else {
+        console.log(`waiting for ${outstanding} more callbacks before continuing`);
+      }
+    }
+
+    // and allow some actions to run in parallel with others
+    function parallel() {
+      outstanding++;
+      process.nextTick(steps[i]); // run the next step, in parallel
+      //console.log(`parallel running ${i}: ${steps[i]}`);
+      i++;
+      return possiblyContinue;
+    }
+
+    possiblyContinue(); // start running steps
+
+  });
+});
+
+describe('multisub', function() {
+  it('should work', function(done) {
+    let conn_i;
+    let conn_j;
+    let conn_k;
+
+    const steps = [
+      // make two separate websocket connections to the server
+      () => conn_i = new WrappedWebSocket('conn_i', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_j = new WrappedWebSocket('conn_j', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_k = new WrappedWebSocket('conn_k', 'ws://localhost:8888/pubsub', next()),
+      () => conn_i.send({watch: {username: "user_i", channel: '#channel_5'}}, {
+        subscribers: {channel: '#channel_5', list:[]}
+      }, next()),
+      () => conn_i.expect({subscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
+      () => conn_j.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
+        subscribers: {channel: '#channel_5', list:[]}
+      }, next()),
+      // conn_i should not be told about the new subscription, as it is being made by user_j, who has already subscribed
+      () => conn_i.wait(100, parallel()),
+      () => conn_k.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
+        subscribers: {channel: '#channel_5', list:[{username: 'user_j', extra: 'j_on_5'}]}
+      }, next()),
+      // conn_i should not be told about the new unsubscribe, as it is being made by user_j, who has still has a one subscription left
+      () => conn_i.wait(100, parallel()),
+      () => { conn_j.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
+      // conn_i should be told about the *final* unsubscription of user_j
+      () => conn_i.expect({unsubscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
+      () => { conn_k.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
+      () => conn_i.close(next()),
+      () => conn_j.close(next()),
+      () => conn_k.close(next()),
       // the end
       done
     ];
@@ -392,73 +467,79 @@ describe('unwat_ch', function() {
     possiblyContinue(); // start running steps
 
   });
+});
 
-  describe('multisub', function() {
-    it('should work', function(done) {
-      let conn_i;
-      let conn_j;
-      let conn_k;
+describe('updated_extra', function() {
+  it('should work', function (done) {
+    let conn_l;
+    let conn_m;
+    let conn_n;
 
-      const steps = [
-        // make two separate websocket connections to the server
-        () => conn_i = new WrappedWebSocket('conn_i', 'ws://localhost:8888/pubsub', parallel()),
-        () => conn_j = new WrappedWebSocket('conn_j', 'ws://localhost:8888/pubsub', parallel()),
-        () => conn_k = new WrappedWebSocket('conn_k', 'ws://localhost:8888/pubsub', next()),
-        () => conn_i.send({watch: {username: "user_i", channel: '#channel_5'}}, {
-          subscribers: {channel: '#channel_5', list:[]}
-        }, next()),
-        () => conn_i.expect({subscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
-        () => conn_j.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
-          subscribers: {channel: '#channel_5', list:[]}
-        }, next()),
-        // conn_i should not be told about the new subscription, as it is being made by user_j, who has already subscribed
-        () => conn_i.wait(100, parallel()),
-        () => conn_k.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
-          subscribers: {channel: '#channel_5', list:[{username: 'user_j', extra: 'j_on_5'}]}
-        }, next()),
-        // conn_i should not be told about the new unsubscribe, as it is being made by user_j, who has still has a one subscription left
-        () => conn_i.wait(100, parallel()),
-        () => { conn_j.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
-        // conn_i shoulde be told about the *final* unsubscription of user_j
-        () => conn_i.expect({unsubscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
-        () => { conn_k.send({unsubscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}); next()(); },
-        () => conn_i.close(next()),
-        () => conn_j.close(next()),
-        () => conn_k.close(next()),
-        // the end
-        done
-      ];
+    const steps = [
+      // make two separate websocket connections to the server
+      () => conn_l = new WrappedWebSocket('conn_l', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_m = new WrappedWebSocket('conn_m', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_n = new WrappedWebSocket('conn_n', 'ws://localhost:8888/pubsub', next()),
+      () => conn_l.send({watch: {username: "user_l", channel: '#channel_6'}}, {
+        subscribers: {channel: '#channel_6', list: []}
+      }, next()),
+      () => conn_l.expect({subscribed: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, parallel()),
+      () => conn_m.send({subscribe: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, {
+        subscribers: {channel: '#channel_6', list: []}
+      }, next()),
+      // conn_l should not be told about the new subscription, as it is being made by user_m, who has already subscribed
+      // but should be told about the updated_extra
+      () => conn_l.expect({ updated_extra: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated' }}, parallel()),
+      () => conn_m.expect({ updated_extra: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated' }}, parallel()),
+      () => conn_n.send({subscribe: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated'}}, {
+        subscribers: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6'}]}
+      }, next()),
+      // conn_l should not be told about the new unsubscribe, as it is being made by user_m, who has still has a one subscription left
+      () => conn_l.wait(100, parallel()),
+      () => { conn_m.send({unsubscribe: {username: 'user_m', channel: '#channel_6'}}); next()(); },
+      // conn_l should be told about the *final* unsubscription of user_m
+      () => conn_l.expect({unsubscribed: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated'}}, parallel()),
+      () => { conn_n.send({unsubscribe: {username: 'user_m', channel: '#channel_6'}}); next()(); },
+      () => conn_l.close(next()),
+      () => conn_m.close(next()),
+      () => conn_n.close(next()),
+      // the end
+      done
+    ];
 
-      // TODO: turn next and parallel into a module
-      // run the async actions in sequence
-      let i = 0;
-      let outstanding = 1;
-      function next() {
-        outstanding++;
-        return possiblyContinue;
-      }
-      function possiblyContinue() {
-        assert(outstanding > 0);
-        outstanding--;
-        if (outstanding === 0) {
-          process.nextTick(steps[i]);
-          //console.log(`running ${i}: ${steps[i]}`);
-          i++;
-        } else {
-          console.log(`waiting for ${outstanding} more callbacks before continuing`);
-        }
-      }
-      // and allow some actions to run in parallel with others
-      function parallel() {
-        outstanding++;
-        process.nextTick(steps[i]); // run the next step, in parallel
-        //console.log(`parallel running ${i}: ${steps[i]}`);
+    // TODO: turn next and parallel into a module
+    // run the async actions in sequence
+    let i = 0;
+    let outstanding = 1;
+
+    function next() {
+      outstanding++;
+      return possiblyContinue;
+    }
+
+    function possiblyContinue() {
+      assert(outstanding > 0);
+      outstanding--;
+      if (outstanding === 0) {
+        process.nextTick(steps[i]);
+        //console.log(`running ${i}: ${steps[i]}`);
         i++;
-        return possiblyContinue;
+      } else {
+        console.log(`waiting for ${outstanding} more callbacks before continuing`);
       }
-      possiblyContinue(); // start running steps
+    }
 
-    });
+    // and allow some actions to run in parallel with others
+    function parallel() {
+      outstanding++;
+      process.nextTick(steps[i]); // run the next step, in parallel
+      //console.log(`parallel running ${i}: ${steps[i]}`);
+      i++;
+      return possiblyContinue;
+    }
+
+    possiblyContinue(); // start running steps
+
   });
 });
 

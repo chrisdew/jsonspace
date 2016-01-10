@@ -19,6 +19,12 @@ function klone(ob) {
   return JSON.parse(JSON.stringify(ob));
 }
 
+// FIXME: this is broken if the objects are equal, but fields were added in a different order
+function deepEqual(a, b) {
+  return (JSON.stringify(a) === JSON.stringify(b));
+}
+
 exports.klone = klone;
 exports.firstNonIdPropertyName = firstNonIdPropertyName;
+exports.deepEqual = deepEqual;
 
