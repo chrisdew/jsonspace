@@ -7,7 +7,7 @@
 const fs = require('fs');
 const bb = require('./lib/blackboard');
 
-const blackboard = new bb.Blackboard();
+const blackboard = new bb.Blackboard(null, () => new Date().toISOString());
 
 // read the config
 // FIXME: read config filename from commandline, or default to /etc/jsonspace/config.json
