@@ -8,6 +8,7 @@
   {"rule":{"type":"websocket_obj_rx","name":"unwatch"}},
   {"rule":{"type":"websocket_obj_rx","name":"unsubscribe"}},
   {"rule":{"type":"subscribed","name":"subscribedToSubscribers"}},
+  {"rule":{"type":"requested_subscribers","name":"requestedSubscribersToRequester"}},
   {"rule":{"type":"updated_extra","name":"updatedExtraToSubscribers"}},
   {"rule":{"type":"published","name":"publishedToSubscribers"}},
   {"rule":{"type":"unsubscribed","name":"unsubscribedToSubscribers"}},

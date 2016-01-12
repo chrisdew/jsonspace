@@ -132,14 +132,14 @@ describe('pubsub', function() {
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {
-        subscribers: {channel: '#channel_0', list:[]}
+        subscribers: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}]}
       }, next()),
       () => conn_a.expect({subscribed: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, parallel()),
       () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {
-        subscribers: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}]}
+        subscribers: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}, {username: "user_b", extra: "b_on_0"}]}
       }, next()),
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
-        subscribers: {channel: '#channel_1', list:[]}
+        subscribers: {channel: '#channel_1', list:[{username: "user_a", extra: "a_on_1"}]}
       }, next()),
       // user_a publishes on channel_0, both user_a and user_b receive the data
       () => conn_b.expect({
@@ -232,7 +232,7 @@ describe('watch', function() {
       }, next()),
       () => conn_c.expect({subscribed: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
       () => conn_d.send({subscribe: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, {
-        subscribers: {channel: '#channel_2', list:[]}
+        subscribers: {channel: '#channel_2', list:[{username: 'user_d', extra: 'd_on_2'}]}
       }, next()),
       // close one of the subscribers and make sure that they are removed form the subscriber objectArrayByField query
       // results
@@ -296,7 +296,7 @@ describe('unsubscribe', function() {
       }, next()),
       () => conn_e.expect({subscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => conn_f.send({subscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, {
-        subscribers:{channel: '#channel_3', list:[]}
+        subscribers:{channel: '#channel_3', list:[{"username": "user_f", "extra": "f_on_3"}]}
       }, next()),
       () => conn_e.expect({unsubscribed: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => { conn_f.send({unsubscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}); next()(); },
@@ -357,7 +357,7 @@ describe('unwat_ch', function() {
       // conn_h should receive nothing in response to conn_h subscribing, as it has unwatched
       () => conn_g.wait(100, parallel()),
       () => conn_h.send({subscribe: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4'}}, {
-        subscribers: {channel: '#channel_4', list: []}
+        subscribers: {channel: '#channel_4', list: [{username: "user_h" , extra: "h_on_4"}]}
       }, next()),
       () => conn_g.close(next()),
       () => conn_h.close(next()),
@@ -417,7 +417,7 @@ describe('multisub', function() {
       }, next()),
       () => conn_i.expect({subscribed: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
       () => conn_j.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
-        subscribers: {channel: '#channel_5', list:[]}
+        subscribers: {channel: '#channel_5', list:[{username: "user_j", extra: "j_on_5"}]}
       }, next()),
       // conn_i should not be told about the new subscription, as it is being made by user_j, who has already subscribed
       () => conn_i.wait(100, parallel()),
@@ -485,14 +485,14 @@ describe('updated_extra', function() {
       }, next()),
       () => conn_l.expect({subscribed: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, parallel()),
       () => conn_m.send({subscribe: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, {
-        subscribers: {channel: '#channel_6', list: []}
+        subscribers: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6'}]}
       }, next()),
       // conn_l should not be told about the new subscription, as it is being made by user_m, who has already subscribed
       // but should be told about the updated_extra
       () => conn_l.expect({ updated_extra: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated' }}, parallel()),
       () => conn_m.expect({ updated_extra: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated' }}, parallel()),
       () => conn_n.send({subscribe: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated'}}, {
-        subscribers: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6'}]}
+        subscribers: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6_updated'}]}
       }, next()),
       // conn_l should not be told about the new unsubscribe, as it is being made by user_m, who has still has a one subscription left
       () => conn_l.wait(100, parallel()),

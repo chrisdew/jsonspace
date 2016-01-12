@@ -39,15 +39,9 @@ function exec(ob, put, queries) {
   // the subscribedToSubscribers rule will cause this to be sent to all channel subscribers
   put(ob_to_put);
 
-  // we no longer tell the originating client that they have subscribed, instead we just send a subscribers list
-  const response = {subscribers:{channel:ob.websocket_obj_rx.data.subscribe.channel,list:[]}};
-
-  const results = queries.subscribed$channel.results(ob.websocket_obj_rx.data.subscribe.channel);
-  for (const result of results) {
-    response.subscribers.list.push({username:result.subscribed.username,extra:result.subscribed.extra});
-  }
-  put({websocket_obj_tx:{conn_id:ob.websocket_obj_rx.conn_id,obj:response}});
-
+  // request that a subscribers list is sent to this conn_id
+  // - this is a workaround to let the query run *after* the query has been updated with the "subscribed" message which this rule has put
+  put({requested_subscribers:{channel:ob.websocket_obj_rx.data.subscribe.channel,conn_id:ob.websocket_obj_rx.conn_id,username:ob.websocket_obj_rx.data.subscribe.username}});
 }
 
 exports.exec = exec;
