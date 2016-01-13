@@ -16,7 +16,8 @@ function exec(ob, put, queries) {
         published:{
           channel:ob.websocket_obj_rx.data.publish.channel,
           username:result.subscribed.username,
-          data:publish.data
+          data:publish.data,
+          conn_id:ob.websocket_obj_rx.conn_id
         }
       });
       return;

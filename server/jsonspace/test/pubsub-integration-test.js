@@ -141,7 +141,7 @@ describe('pubsub', function() {
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
         subscribers: {channel: '#channel_1', list:[{username: "user_a", extra: "a_on_1"}]}
       }, next()),
-      // user_a publishes on channel_0, both user_a and user_b receive the data
+      // user_a publishes on channel_0, only user_b will receive the data, as there is no echo
       () => conn_b.expect({
         published: {
           username: 'user_a',
@@ -149,20 +149,23 @@ describe('pubsub', function() {
           data: 'first on channel 0'
         }
       }, parallel()),
-      () => conn_a.send({publish: {channel: '#channel_0', data: 'first on channel 0'}},
-        {published: {username: 'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()
-      ),
+      //() => conn_a.send({publish: {channel: '#channel_0', data: 'first on channel 0'}},
+      //  {published: {username: 'user_a', channel: '#channel_0', data: 'first on channel 0'}}, next()
+      //),
+      () => { conn_a.send({publish: {channel: '#channel_0', data: 'first on channel 0'}}); next()(); },
       // user_a publishes on channel_1, only user_a receives the data
       // (if user_b got a copy, it would cause a later test to fail, as this data is not expected)
-      () => conn_a.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},
-        {published: {username: 'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
-      ),
+      //() => conn_a.send({publish: {channel: '#channel_1', data: 'first on channel 1'}},
+      //  {published: {username: 'user_a', channel: '#channel_1', data: 'first on channel 1'}}, next()
+      //),
+      () => { conn_a.send({publish: {channel: '#channel_1', data: 'first on channel 1'}}); next()(); },
       // user_b publishes on channel_0, both user_a and user_b receive the data
       () => conn_a.expect({published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}},
         parallel()),
-      () => conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}},
-        {published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
-      ),
+      //() => conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}},
+      //  {published: {username: 'user_b', channel: '#channel_0', data: 'second on channel 0'}}, next()
+      //),
+      () => { conn_b.send({publish: {channel: '#channel_0', data: 'second on channel 0'}}); next()(); },
       () => conn_b.send({watch: {username: "user_b", channel: '#channel_1'}}, {
         subscribers: {channel: "#channel_1", list:[{username: "user_a", extra: "a_on_1"}]}
       }, next()),
@@ -176,9 +179,10 @@ describe('pubsub', function() {
       // if we send more data, before the server realises that the first websocket is closed, we get a harmless error,
       // so wait 100ms, just to make the results neat
       () => setTimeout(next(), 100),
-      () => conn_b.send({publish: {channel: '#channel_0', data: 'third on channel 0'}},
-        {published: {username: 'user_b', channel: '#channel_0', data: 'third on channel 0'}}, next()
-      ),
+      //() => conn_b.send({publish: {channel: '#channel_0', data: 'third on channel 0'}},
+      //  {published: {username: 'user_b', channel: '#channel_0', data: 'third on channel 0'}}, next()
+      //),
+      () => { conn_b.send({publish: {channel: '#channel_0', data: 'third on channel 0'}}); next()(); },
       () => conn_b.close(next()),
       // the end
       done
