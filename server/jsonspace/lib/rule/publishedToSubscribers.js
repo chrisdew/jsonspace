@@ -13,7 +13,7 @@ function exec(ob, put, queries) {
   const results = queries.subscribed$channel.results(ob.published.channel);
   for (const result of results) {
     if (result.subscribed.conn_id === ob.published.conn_id) continue;
-    put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:{published:redacted.published}}});
+    put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
 
   // TODO: add channel sending/alerting code (for other transports, such as GCM, etc.) here

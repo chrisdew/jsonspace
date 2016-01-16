@@ -106,9 +106,13 @@
         console.log('handleSubscribeButtonClick');
         var channel = $('#subscribe_channel').val();
         var extra = $('#subscribe_extra').val();
-        send(JSON.stringify({subscribe:{username:local_state.username,channel:channel,extra:extra}}));
+        var published_since = $('#subscribe_published_since').val();
+        var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
+        if (published_since) request.subscribe.published_since = published_since;
+        send(JSON.stringify(request));
         $('#subscribe_channel').val('');
         $('#subscribe_extra').val('');
+        $('#subscribe_published_since').val('');
         addToChannels(channel);
         removeFromWatched(channel);
       }
@@ -155,8 +159,9 @@
     <br/>
     <h2>subscribe to a new channel</h2>
     <form>
-      <input id="subscribe_channel" type="text">
-      <input id="subscribe_extra" type="text">
+      <label>channel:<input id="subscribe_channel" type="text"></label>
+      <label>extra: <input id="subscribe_extra" type="text"></label>
+      <label>published_since (optional): <input id="subscribe_published_since" type="text"></label>
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <br/>
@@ -169,7 +174,7 @@
     <br/>
     <h2>watch a new channel</h2>
     <form>
-      <input id="watch_channel" type="text">
+      <label>channel:<input id="watch_channel" type="text"></label>
       <button id="watch" onclick="handleWatchButtonClick(); return false;">Watch</button>
     </form>
     <br/>

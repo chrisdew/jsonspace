@@ -545,5 +545,83 @@ describe('updated_extra', function() {
     possiblyContinue(); // start running steps
 
   });
+
+
+
+  describe('published_since', function() {
+    it('should cause old message to be sent when subscribing', function (done) {
+      let conn_o;
+      let conn_p;
+      let conn_q;
+
+      const steps = [
+        // make two separate websocket connections to the server
+        () => conn_o = new WrappedWebSocket('conn_o', 'ws://localhost:8888/pubsub', next()),
+        () => conn_o.send({subscribe: {username: 'user_o', channel: '#channel_7', extra: 'o_on_7'}}, {
+          subscribers: {channel: '#channel_7', list: [{username: "user_o", extra: "o_on_7"}]}
+        }, next()),
+        () => {
+          conn_o.send({publish: {channel: '#channel_7', data: 'first on channel 7'}});
+          next()();
+        },
+        () => conn_o.close(next()),
+        () => setTimeout(next(), 200), // wait for socket to close
+        () => conn_p = new WrappedWebSocket('conn_p', 'ws://localhost:8888/pubsub', next()),
+        () => conn_p.send({
+          subscribe: {
+            username: 'user_p',
+            channel: '#channel_7',
+            extra: 'p_on_7',
+            published_since: '1970-01-01T00:00:00.000Z'
+          }
+        }, {
+          subscribers: {channel: '#channel_7', list: [{username: "user_p", extra: "p_on_7"}]}
+        }, next()),
+        () => conn_p.expect({
+          published: {
+            username: 'user_o',
+            channel: '#channel_7',
+            data: 'first on channel 7'
+          }
+        }, next()),
+        () => conn_p.close(next()),
+        done
+      ];
+
+      // TODO: turn next and parallel into a module
+      // run the async actions in sequence
+      let i = 0;
+      let outstanding = 1;
+
+      function next() {
+        outstanding++;
+        return possiblyContinue;
+      }
+
+      function possiblyContinue() {
+        assert(outstanding > 0);
+        outstanding--;
+        if (outstanding === 0) {
+          process.nextTick(steps[i]);
+          //console.log(`running ${i}: ${steps[i]}`);
+          i++;
+        } else {
+          console.log(`waiting for ${outstanding} more callbacks before continuing`);
+        }
+      }
+
+      // and allow some actions to run in parallel with others
+      function parallel() {
+        outstanding++;
+        process.nextTick(steps[i]); // run the next step, in parallel
+        //console.log(`parallel running ${i}: ${steps[i]}`);
+        i++;
+        return possiblyContinue;
+      }
+
+      possiblyContinue(); // start running steps
+
+    });
+  });
 });
 

@@ -42,6 +42,19 @@ function exec(ob, put, queries) {
   // request that a subscribers list is sent to this conn_id
   // - this is a workaround to let the query run *after* the query has been updated with the "subscribed" message which this rule has put
   put({requested_subscribers:{channel:ob.websocket_obj_rx.data.subscribe.channel,conn_id:ob.websocket_obj_rx.conn_id,username:ob.websocket_obj_rx.data.subscribe.username}});
+
+  // request that a history is sent to this conn_id
+  const published_since = ob.websocket_obj_rx.data.subscribe.published_since;
+  if (typeof published_since === 'string') {
+    put({
+      requested_publisheds: {
+        channel: ob.websocket_obj_rx.data.subscribe.channel,
+        conn_id: ob.websocket_obj_rx.conn_id,
+        username: ob.websocket_obj_rx.data.subscribe.username,
+        published_since: published_since
+      }
+    });
+  }
 }
 
 exports.exec = exec;
