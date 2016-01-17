@@ -130,5 +130,4 @@
 
 06:12 splitting into two npm packages
 07:44
-
-
+10:44 publishing on npm
