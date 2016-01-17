@@ -62,7 +62,6 @@ class Blackboard {
 
     if (type == 'rule') {
       const required = this.super_require(ob.rule.name);
-      console.log(ob.rule.name);
       this.pushRule(ob.rule.type, required.exec, this._queries);
     }
 

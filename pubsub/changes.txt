@@ -1,0 +1,5 @@
+2016-01-17 0.4.3
+================
+
+* Updated dependency on jsonspace
+* Added README.md
