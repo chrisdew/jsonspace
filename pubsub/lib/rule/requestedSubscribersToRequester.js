@@ -1,6 +1,6 @@
 "use strict";
 
-const u = require('../util');
+const u = require('jsonspace/lib/util');
 
 function exec(ob, put, queries) {
   if (!ob.requested_subscribers || !ob.requested_subscribers.channel) return;

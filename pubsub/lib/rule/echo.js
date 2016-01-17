@@ -6,7 +6,7 @@
  * This rule consumes _rx obs and puts back _tx obs, causing an echo.
  */
 
-const u = require('../util');
+const u = require('jsonspace/lib/util');
 
 function exec(ob, put) {
   const obName = u.firstNonIdPropertyName(ob);

@@ -10,10 +10,11 @@ const u = require('./util');
 
 
 class Blackboard {
-  constructor(ip, dateFn) {
+  constructor(ip, dateFn, super_modules) {
     if (!ip) ip = '127.0.0.1';
     if (!dateFn) dateFn = () => { return "1970-01-01T00:00:00.000Z"};
 
+    this._super_modules = super_modules;
     this._rules = {}
     this._protocols = {};
     this._queries = {};
@@ -60,7 +61,8 @@ class Blackboard {
     }
 
     if (type == 'rule') {
-      const required = require('./rule/' + ob.rule.name);
+      const required = this.super_require(ob.rule.name);
+      console.log(ob.rule.name);
       this.pushRule(ob.rule.type, required.exec, this._queries);
     }
 
@@ -87,6 +89,10 @@ class Blackboard {
       //console.log('this._queries', this._queries);
       this._queries[name].put(ob);
     }
+  }
+
+  super_require(module_name) {
+    return this._super_modules[module_name];
   }
 
   pushRule(type, rule) {

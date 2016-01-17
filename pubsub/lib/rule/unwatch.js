@@ -1,7 +1,5 @@
 "use strict";
 
-const u = require('../util');
-
 function exec(ob, put, queries) {
   if (!ob.websocket_obj_rx.data.unwatch || !ob.websocket_obj_rx.data.unwatch.channel || !ob.websocket_obj_rx.data.unwatch.username) return;
 

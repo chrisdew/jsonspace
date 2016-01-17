@@ -1,6 +1,6 @@
 "use strict";
 
-const u = require('../util');
+const u = require('jsonspace/lib/util');
 
 function exec(ob, put, queries) {
   if (!ob.websocket_obj_rx.data.publish || !ob.websocket_obj_rx.data.publish.channel) return;

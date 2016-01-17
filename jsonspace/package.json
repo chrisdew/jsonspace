@@ -1,14 +1,14 @@
 {
   "name": "jsonspace",
-  "version": "0.3.0",
-  "description": "The JSON Space Server",
-  "main": "index.js",
+  "version": "0.4.0",
+  "description": "jsonspace framework (unstable)",
+  "main": "jsonspace.js",
   "scripts": {
     "test": "node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chrisdew/jsonspace/server/jsonspace"
+    "url": "https://github.com/chrisdew/jsonspace/jsonspace"
   },
   "keywords": [
     "tuple-space",
@@ -32,7 +32,6 @@
     "linux"
   ],
   "scripts": {
-    "start": "node jsonspace.js",
     "test": "./node_modules/.bin/mocha"
   }
 }

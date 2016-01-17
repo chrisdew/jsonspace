@@ -4,7 +4,7 @@
  * Created by chris on 14/12/2015.
  */
 
-const u = require('../util');
+const u = require('jsonspace/lib/util');
 
 function exec(ob, put, queries) {
   const obName = u.firstNonIdPropertyName(ob);
