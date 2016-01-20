@@ -3,3 +3,9 @@
 
 * Updated dependency on jsonspace
 * Added README.md
+
+
+2016-01-xx - 0.4.6
+==================
+
+* Added dummy DNS protocol rule to always reply 127.0.0.1.

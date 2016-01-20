@@ -1,6 +1,7 @@
 [
   {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"}}}},
   {"protocol":{"http":{"listen":{"port":8080}}}},
+  {"protocol":{"dns":{"listen":{"port":8053}}}},
   {"rule":{"type":"websocket_raw_rx","name":"rawToObj"}},
   {"rule":{"type":"websocket_obj_rx","name":"subscribe"}},
   {"rule":{"type":"websocket_obj_rx","name":"publish"}},
@@ -16,6 +17,7 @@
   {"rule":{"type":"websocket_disconnected","name":"unsubscribedOnDisconnect"}},
   {"rule":{"type":"websocket_disconnected","name":"unwatchedOnDisconnect"}},
   {"rule":{"type":"http_request","name":"httpStatic"}},
+  {"rule":{"type":"dns_request","name":"dnsResponse"}},
   {"query":{"name":"subscribed$channel","code":"objectArrayByField","args":["subscribed","unsubscribed","channel"]}},
   {"query":{"name":"subscribed$conn_id","code":"objectArrayByField","args":["subscribed","unsubscribed","conn_id"]}},
   {"query":{"name":"published$channel","code":"objectArrayByField","args":["published","unpublished","channel"]}},

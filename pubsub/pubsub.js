@@ -10,6 +10,8 @@ const jsonspace = require('jsonspace');
 // FIXME: manually requiring modules and passing them to the blackboard is horrible.
 // http://stackoverflow.com/questions/34835822/can-a-npm-dependency-require-a-module-from-its-parent-package
 const blackboard = new jsonspace.Blackboard(null, () => new Date().toISOString(), {
+  dnsResponse: require('./lib/rule/dnsResponse'),
+  httpStatic: require('./lib/rule/httpStatic'),
   echo: require('./lib/rule/echo'),
   httpStatic: require('./lib/rule/httpStatic'),
   publish: require('./lib/rule/publish'),
