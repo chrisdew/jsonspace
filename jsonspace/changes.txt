@@ -2,3 +2,9 @@
 ==================
 
 Removed some debugging.
+
+
+2016-01-xx - 0.4.4
+==================
+
+Replaced array with circular buffer in objectArrayByField. so as to stop unbounded memory usage.
