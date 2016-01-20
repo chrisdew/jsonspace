@@ -56,7 +56,13 @@ class Blackboard {
         const typeSend = required.listen(ob, function(protocol_ob) {
           that.put(protocol_ob);
         });
-        this.pushRule(typeSend.type, typeSend.send)
+        if (typeSend.type) {
+          this.pushRule(typeSend.type, typeSend.send)
+        } else if (typeSend.types) {
+          for (const type in typeSend.types) {
+            this.pushRule(typeSend.type, typeSend.send)
+          }
+        }
       }
     }
 
