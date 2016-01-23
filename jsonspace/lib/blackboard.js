@@ -55,7 +55,7 @@ class Blackboard {
         // FIXME: having trouble with destructuring - const {type, send} = ... isn't working
         const typeSend = required.listen(ob, function(protocol_ob) {
           that.put(protocol_ob);
-        });
+        }, (types) => this.getReferences(types));
         if (typeSend.type) {
           this.pushRule(typeSend.type, typeSend.send)
         } else if (typeSend.types) {
@@ -111,15 +111,29 @@ class Blackboard {
     this._queries[name] = query;
   }
 
-  getReferences() {
+  getReferences(types) {
     let ret = {}; // list each referenced object a maximum of once
     for (let name in this._queries) {
       let references = this._queries[name].getReferences();
-      for (let id in references) {
-        ret[id] = references[id];
+      for (let reference of references) {
+        const id = reference.id;
+        console.log('types', types)
+        if (!types) {
+          ret[id] = reference;
+        } else {
+          let type = u.firstNonIdPropertyName(reference);
+          console.log('type', type, 'types', types, reference);
+          if (types.indexOf(type) != -1) {
+            ret[id] = reference;
+          }
+        }
       }
     }
-    return ret;
+    const ret2 = [];
+    for (const i in ret) {
+      ret2.push(ret[i]);
+    }
+    return ret2;
   }
 }
 

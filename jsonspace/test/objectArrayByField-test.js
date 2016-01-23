@@ -35,6 +35,12 @@ describe('objectArrayByField', function() {
       }
     ], query.results('a'));
 
+    assert.deepEqual([
+      { foo: { bar: 'a', baz: 'conn0' } },
+      { foo: { bar: 'a', baz: 'conn1' } },
+      { foo: { bar: 'b', baz: 'conn0' } }
+    ], query.getReferences());
+
     // FIXME: there is some code which is checking object identity, when it should be checking object value, so the
     // references below are currently necessary.
     const unobs = [

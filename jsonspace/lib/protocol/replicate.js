@@ -2,7 +2,7 @@
 
 const net = require('net');
 
-function listen(ob, put) {
+function listen(ob, put, getReferences) {
   const conns = {}; // tcp connections by conn_id
 
   const server = net.createServer((connection) => {
@@ -19,6 +19,10 @@ function listen(ob, put) {
       tcp_conn:tcp_conn,
     }});
     // TODO: send contents of pool on connection
+    const refs = getReferences(ob.protocol.replicate.types);
+    for (const i in refs) {
+      connection.write(JSON.stringify(refs[i]) + '\n');
+    }
   });
 
   // TODO: remove closed/errored clients form conns

@@ -40,7 +40,11 @@ class Query {
   }
 
   getReferences() {
-    return Object.values(this._objByKey);
+    const ret = [];
+    for (const key in this._objByKey) {
+      ret.push(this._objByKey[key]);
+    }
+    return ret;
   }
 
   result(key) {

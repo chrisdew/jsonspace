@@ -46,6 +46,7 @@ describe('objectByField', function() {
     query.put(unobs[1]);
     assert.deepEqual(undefined, query.result('a'));
 
+    assert.deepEqual([{foo:{bar:'b',baz:'conn0'}}], query.getReferences());
   });
 
 });

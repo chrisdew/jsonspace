@@ -52,7 +52,11 @@ class Query {
   }
 
   getReferences() {
-    throw new Error('not implemented, yet');
+    const ret = [];
+    for (const key in this._objByKey) {
+      ret.push(this._objByKey[key].toArray());
+    }
+    return [].concat(...ret);
   }
 
   results(key) {
