@@ -18,9 +18,9 @@ class CircularBuffer {
 
   push(ob) {
     this.array[this.pushIndex] = ob;
-    console.log('b', this.pushIndex);
+    //console.log('b', this.pushIndex);
     this.pushIndex = (this.pushIndex + 1) % this.capacity;
-    console.log('a', this.pushIndex);
+    //console.log('a', this.pushIndex);
   }
 
   toArray() {

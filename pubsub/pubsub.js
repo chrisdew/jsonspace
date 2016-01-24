@@ -13,7 +13,6 @@ const blackboard = new jsonspace.Blackboard(null, () => new Date().toISOString()
   dnsResponse: require('./lib/rule/dnsResponse'),
   httpStatic: require('./lib/rule/httpStatic'),
   echo: require('./lib/rule/echo'),
-  httpStatic: require('./lib/rule/httpStatic'),
   publish: require('./lib/rule/publish'),
   publishedToSubscribers: require('./lib/rule/publishedToSubscribers'),
   rawToObj: require('./lib/rule/rawToObj'),
@@ -31,11 +30,25 @@ const blackboard = new jsonspace.Blackboard(null, () => new Date().toISOString()
 });
 
 // read the config
-// FIXME: read config filename from commandline, or default to /etc/jsonspace/config.json
-const configText = fs.readFileSync('./config.json');
-const config = JSON.parse(configText);
-for (const message of config) {
-  blackboard.put(message);
+let configRead = false;
+const filenames = ['/etc/pubsub.json', './etc/pubsub.json'];
+for (const filename of filenames) {
+  try {
+    const configText = fs.readFileSync(filename);
+    blackboard.put({server_start:{config:filename}});
+    const config = JSON.parse(configText);
+    for (const message of config) {
+      blackboard.put(message);
+    }
+    configRead = true;
+    break;
+  } catch (e) {
+    // nothing to do, just try the next filename
+  }
+}
+if (!configRead) {
+  console.err('config not found in any of: ' + filenames);
+  process.exit(1);
 }
 
 

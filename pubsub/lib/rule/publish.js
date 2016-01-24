@@ -11,7 +11,6 @@ function exec(ob, put, queries) {
   // TODO: make a new query type which accepts multiple keys
   for (const result of results) {
     if (result.subscribed.channel === publish.channel) {
-      console.log(';;;');
       put({
         published:{
           channel:ob.websocket_obj_rx.data.publish.channel,

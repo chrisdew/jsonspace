@@ -32,7 +32,6 @@ function listen(ob, put, getReferences) {
   // this function is given back to the blackboard to handle outgoing websocket data
   // FIXME: this is not working...
   function send(ob, put) {
-    console.log('conns', conns)
     for (const i in conns) {
       conns[i].write(JSON.stringify(ob) + '\n');
     }

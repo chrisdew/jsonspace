@@ -117,12 +117,12 @@ class Blackboard {
       let references = this._queries[name].getReferences();
       for (let reference of references) {
         const id = reference.id;
-        console.log('types', types)
+        //console.log('types', types)
         if (!types) {
           ret[id] = reference;
         } else {
           let type = u.firstNonIdPropertyName(reference);
-          console.log('type', type, 'types', types, reference);
+          //console.log('type', type, 'types', types, reference);
           if (types.indexOf(type) != -1) {
             ret[id] = reference;
           }

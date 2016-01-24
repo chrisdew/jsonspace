@@ -20,8 +20,6 @@ function exec(ob, put, queries) {
   // query until *after* this code has been run
   if (num_for_username > 1) return;
 
-  console.log('###');
-
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.unsubscribed.channel);
   for (const result of results) {
