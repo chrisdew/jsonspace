@@ -59,8 +59,8 @@ class Blackboard {
         if (typeSend.type) {
           this.pushRule(typeSend.type, typeSend.send)
         } else if (typeSend.types) {
-          for (const type in typeSend.types) {
-            this.pushRule(typeSend.type, typeSend.send)
+          for (const type of typeSend.types) {
+            this.pushRule(type, typeSend.send)
           }
         }
       }

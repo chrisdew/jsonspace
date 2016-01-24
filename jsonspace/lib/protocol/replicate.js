@@ -18,7 +18,7 @@ function listen(ob, put, getReferences) {
       conn_id:conn_id,
       tcp_conn:tcp_conn,
     }});
-    // TODO: send contents of pool on connection
+    // send contents of pool on connection
     const refs = getReferences(ob.protocol.replicate.types);
     for (const i in refs) {
       connection.write(JSON.stringify(refs[i]) + '\n');
@@ -30,12 +30,14 @@ function listen(ob, put, getReferences) {
   server.listen(ob.protocol.replicate.listen.port);
 
   // this function is given back to the blackboard to handle outgoing websocket data
+  // FIXME: this is not working...
   function send(ob, put) {
-    for (const connection of conns) {
-      connection.write(JSON.stringify(ob) + '\n');
+    console.log('conns', conns)
+    for (const i in conns) {
+      conns[i].write(JSON.stringify(ob) + '\n');
     }
   }
-  return {types:[ob.protocol.replicate.types], send:send};
+  return {types:ob.protocol.replicate.types, send:send};
 }
 
 exports.listen = listen;
