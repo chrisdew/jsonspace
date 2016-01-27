@@ -9,7 +9,7 @@
         $('<li>' + message + '</li>').appendTo('#messages');
       };
 
-      var ws_url = 'ws://localhost:8888/pubsub';
+      var ws_url = 'ws://' + location.host.split(':')[0] + ':8888/pubsub';
       console.log('ws_url', ws_url);
       var sock = false;
 
