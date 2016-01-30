@@ -1,5 +1,7 @@
 [
   {"protocol":{"replicate":{"listen":{"port":8008},"types":["published","subscribed","unsubscribed","updated_extra"]}}},
+  {"protocol":{"replication_client":{"connect":{"host":"127.0.0.1","port":8800},"types":["published","subscribed","unsubscribed","updated_extra"]}}},
+  {"protocol":{"replication_client":{"connect":{"host":"127.0.0.1","port":8801},"types":["published","subscribed","unsubscribed","updated_extra"]}}},
   {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"}}}},
   {"protocol":{"http":{"listen":{"port":8080}}}},
   {"protocol":{"dns":{"listen":{"port":8053}}}},

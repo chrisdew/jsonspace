@@ -18,6 +18,7 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
+    "byline": "^4.2.1",
     "native-dns": "^0.7.0",
     "ws": "^0.8.1"
   },

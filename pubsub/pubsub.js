@@ -32,22 +32,33 @@ const blackboard = new jsonspace.Blackboard(null, () => new Date().toISOString()
 // read the config
 let configRead = false;
 const filenames = ['/etc/pubsub.json', './etc/pubsub.json'];
+blackboard.put({server_start:{}});
 for (const filename of filenames) {
   try {
     const configText = fs.readFileSync(filename);
     blackboard.put({server_start:{config:filename}});
-    const config = JSON.parse(configText);
+    let config;
+    try {
+      config = JSON.parse(configText);
+    } catch (e) {
+      blackboard.put({config_error:{ref:configText}});
+    }
     for (const message of config) {
-      blackboard.put(message);
+      try {
+        blackboard.put(message);
+      } catch (e) {
+        blackboard.put({config_error:{ref:message}});
+      }
     }
     configRead = true;
     break;
   } catch (e) {
     // nothing to do, just try the next filename
+    blackboard.put({server_start:{config:filename}});
   }
 }
 if (!configRead) {
-  console.err('config not found in any of: ' + filenames);
+  console.error('config not found in any of: ' + filenames);
   process.exit(1);
 }
 
