@@ -20,6 +20,7 @@ class Blackboard {
     this._queries = {};
     this._log = null;
     this._idGenerator = new IdGenerator(ip, dateFn);
+    this._putIds = {}; // a map of id->true for every id which has been put, used to stop repeated messages from replication
   }
 
   put(ob) {
@@ -30,6 +31,13 @@ class Blackboard {
 
       // give it an id, if it doesn't have one
       if (!ob.id) ob.id = this._idGenerator.generate();
+
+      // replace this with a bloom filter and an index lookup
+      if (!this.isNew(ob)) {
+        this.put({dup:{ref:ob}});
+        return;
+      }
+      this._putIds[ob.id] = true;
 
       // handle logging meta objects
       if (type == 'logging') {
@@ -69,7 +77,7 @@ class Blackboard {
           required.start(ob, function(protocol_ob) {
             that.put(protocol_ob);
           }, function(protocol_ob) {
-            that.pool(protocol_ob);
+            that.isNew(protocol_ob);
           });
         }
       }
@@ -134,6 +142,7 @@ class Blackboard {
     let ret = {}; // list each referenced object a maximum of once
     for (let name in this._queries) {
       let references = this._queries[name].getReferences();
+      console.log('aaa', references);
       for (let reference of references) {
         const id = reference.id;
         //console.log('types', types)
@@ -153,6 +162,10 @@ class Blackboard {
       ret2.push(ret[i]);
     }
     return ret2;
+  }
+
+  isNew(ob) {
+    return !this._putIds[ob.id];
   }
 }
 

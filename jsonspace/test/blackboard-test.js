@@ -39,7 +39,11 @@ class CounterQuery {
   }
 
   getReferences() {
-    return klone(this._objects);
+    const ret = [];
+    for (let p in this._objects) {
+      ret.push(this._objects[p]);
+    }
+    return ret;
   }
 
   getResult() {
@@ -106,9 +110,30 @@ describe('blackboard', function() {
     assert.deepEqual(fooCounter.getResult(), 2);
     assert.deepEqual(barCounter.getResult(), 1);
 
-    assert.deepEqual(fooCounter.getReferences(), { '0': { id: '0', foo: true }, '1': { id: '1', foo: true, bar: true } });
-    assert.deepEqual(barCounter.getReferences(), { '1': { id: '1', foo: true, bar: true } });
-    assert.deepEqual(blackboard.getReferences(), { '0': { id: '0', foo: true }, '1': { id: '1', foo: true, bar: true } });
+    assert.deepEqual(fooCounter.getReferences(), [{ id: '0', foo: true }, { id: '1', foo: true, bar: true }]);
+    assert.deepEqual(barCounter.getReferences(), [{ id: '1', foo: true, bar: true }]);
+    assert.deepEqual(blackboard.getReferences(), [{ id: '0', foo: true }, { id: '1', foo: true, bar: true }]);
+
+  });
+  it('should be able to dedup, for replication_client', function() {
+    let blackboard = new bb.Blackboard();
+    let fooCounter = new CounterQuery('foo');
+    let dupCounter = new CounterQuery('dup');
+    blackboard.pushQuery('fooCounter', fooCounter);
+    blackboard.pushQuery('dupCounter', dupCounter);
+
+    blackboard.put({id:"0",foo: 'a'});
+    assert.deepEqual(fooCounter.getResult(), 1);
+    assert.deepEqual(dupCounter.getResult(), 0);
+
+    blackboard.put({id:"1",foo: 'b'});
+    assert.deepEqual(fooCounter.getResult(), 2);
+    assert.deepEqual(dupCounter.getResult(), 0);
+
+    blackboard.put({id:"1",foo: 'b'});
+    assert.deepEqual(fooCounter.getResult(), 2);
+    assert.deepEqual(dupCounter.getResult(), 1);
+
 
   });
 });
