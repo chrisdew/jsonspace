@@ -14,6 +14,7 @@ class Blackboard {
     if (!ip) ip = '127.0.0.1';
     if (!dateFn) dateFn = () => { return "1970-01-01T00:00:00.000Z"};
 
+    this._ip = ip;
     this._super_modules = super_modules;
     this._rules = {}
     this._protocols = {};
@@ -101,7 +102,9 @@ class Blackboard {
               that.put(ob)
             });
           },
-          this._queries);
+          this._queries,
+          this.isRemote.bind(this)
+        );
         // FIXME: semantics - should this return, or just break?
         if (drop) return;
       }
@@ -121,6 +124,10 @@ class Blackboard {
     } catch (e) {
       console.error('pool error:', e, 'ref:', ob);
     }
+  }
+
+  isRemote(ob) {
+    return this._ip !== ob.id.split('|')[2];
   }
 
   super_require(module_name) {

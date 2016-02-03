@@ -11,7 +11,7 @@ function listen(ob, put, getReferences) {
     const server_addr = connection.localAddress;
     const server_port = connection.localPort;
     const tcp_conn = {client:{host:client_addr,port:client_port},server:{host:server_addr,port:server_port}};
-    const conn_id = `replicate|${client_addr}:${client_port}|${server_addr}:${server_port}`;
+    const conn_id = `replicate|${client_addr}|${client_port}|${server_addr}|${server_port}`;
     conns[conn_id] = connection;
     put({replicate_connected:{
       conn_id:conn_id,
@@ -26,11 +26,16 @@ function listen(ob, put, getReferences) {
 
   // TODO: remove closed/errored clients form conns
 
-  server.listen(ob.protocol.replicate.listen.port);
+  server.listen(ob.protocol.replicate.listen.port, ob.protocol.replicate.listen.host);
 
-  // this function is given back to the blackboard to handle outgoing websocket data
   function send(ob, put) {
     for (const i in conns) {
+      // only send obs whose id's IP is not the same as the conns's conn_id's IP
+      const ob_ip = ob.id.split('|')[2];
+      const client_ip = i.split('|')[1];
+      //put({info:{ob_ip:ob_ip,client_ip:client_ip}});
+      if (ob_ip === client_ip) continue; // don't send messages back to the node which created them
+
       conns[i].write(JSON.stringify(ob) + '\n');
     }
   }

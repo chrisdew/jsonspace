@@ -35,10 +35,13 @@ class Query {
 
     let unmessage = ob[this._unmessageType];
     if (unmessage) {
+      console.log('unmessage ' + JSON.stringify(unmessage));
       let keyFieldValue = unmessage[this._keyField];
       if (!keyFieldValue) return;
+      console.log('unmessage1 ' + JSON.stringify(unmessage));
 
       if (!this._objByKey[keyFieldValue]) {
+        console.log('unmessage2 ' + JSON.stringify(unmessage));
         this._objByKey[keyFieldValue] = new cb.CircularBuffer(this._max);
       }
 
@@ -47,7 +50,10 @@ class Query {
       // it will break if they are only the same value of object
       // TODO: find a good, fast Javascript deepEqual function
       const circBuf = this._objByKey[keyFieldValue];
-      circBuf.remove((x) => x[this._messageType] === unmessage);
+      circBuf.remove((x) => {
+        console.log('unmessage3 ' + JSON.stringify(unmessage) + ' ' + JSON.stringify(x[this._messageType]));
+        x[this._messageType] === unmessage
+      });
     }
   }
 
@@ -66,6 +72,14 @@ class Query {
       // this lets the caller avoid a null check
       return [];
     }
+  }
+
+  debug() {
+    const ret = {};
+    for (const key in this._objByKey) {
+      ret[key] = this._objByKey[key].toArray();
+    }
+    return ret;
   }
 }
 

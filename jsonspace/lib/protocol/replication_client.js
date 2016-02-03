@@ -19,8 +19,8 @@ function start(ob, put, pool) {
       put({replication_client_connected: {conn_id: conn_id}});
       const lines = byline(conn);
       lines.on('data', function (data) {
-        put({replication_client_rx: {conn_id: conn_id, data: data}});
         let rep = JSON.parse(data);
+        put({replication_client_rx: {conn_id: conn_id, ob: rep}});
         let type = u.firstNonIdPropertyName(rep);
 
         let put_types = ob.protocol.replication_client.put_types;

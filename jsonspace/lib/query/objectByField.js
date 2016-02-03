@@ -50,6 +50,10 @@ class Query {
   result(key) {
     return this._objByKey[key];
   }
+
+  debug() {
+    return this._objByKey;
+  }
 }
 
 exports.Query = Query;

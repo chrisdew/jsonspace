@@ -2,7 +2,7 @@
 
 const u = require('jsonspace/lib/util');
 
-function exec(ob, put, queries) {
+function exec(ob, put, queries, isRemote) {
   if (!ob.subscribed || !ob.subscribed.channel) return;
 
   // *never* mutate existing message objects, always klone first
@@ -29,6 +29,7 @@ function exec(ob, put, queries) {
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.subscribed.channel);
   for (const result of results) {
+    if (isRemote(result)) continue;
     if (result.subscribed.conn_id === ob.subscribed.conn_id) continue;
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
@@ -36,6 +37,7 @@ function exec(ob, put, queries) {
   // also send the message to each websocket connection which has watched the channel
   const watchResults = queries.watched$channel.results(ob.subscribed.channel);
   for (const watchResult of watchResults) {
+    if (isRemote(watchResult)) continue;
     if (watchResult.watched.conn_id === ob.subscribed.conn_id) continue;
     put({websocket_obj_tx:{conn_id:watchResult.watched.conn_id,obj:redacted}});
   }

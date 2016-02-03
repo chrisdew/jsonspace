@@ -154,7 +154,6 @@ describe('pubsub', function() {
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
         subscribers: {channel: '#channel_1', list:[{username: "user_a", extra: "a_on_1"}]}
       }, next()),
-      done,
       // user_a publishes on channel_0, only user_b will receive the data, as there is no echo
       () => conn_b.expect({
         published: {

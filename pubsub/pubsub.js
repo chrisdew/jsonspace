@@ -6,11 +6,27 @@
 
 const fs = require('fs');
 const jsonspace = require('jsonspace');
+var os = require('os');
+
+function getAddresses() {
+  var interfaces = os.networkInterfaces();
+  var addresses = [];
+  for (var k in interfaces) {
+    for (var k2 in interfaces[k]) {
+      var address = interfaces[k][k2];
+      if (address.family === 'IPv4' && !address.internal) {
+        addresses.push(address.address);
+      }
+    }
+  }
+  return addresses;
+}
 
 // FIXME: manually requiring modules and passing them to the blackboard is horrible.
 // http://stackoverflow.com/questions/34835822/can-a-npm-dependency-require-a-module-from-its-parent-package
-const blackboard = new jsonspace.Blackboard(null, () => new Date().toISOString(), {
+const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().toISOString(), {
   dnsResponse: require('./lib/rule/dnsResponse'),
+  httpDebug: require('./lib/rule/httpDebug'),
   httpStatic: require('./lib/rule/httpStatic'),
   echo: require('./lib/rule/echo'),
   publish: require('./lib/rule/publish'),
