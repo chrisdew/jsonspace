@@ -5,6 +5,7 @@
  */
 
 const cb = require('../circularBuffer');
+const u = require('../util');
 
 const DEFAULT_MAX=100; // we can *never* afford unlimited memory usage
 
@@ -51,8 +52,9 @@ class Query {
       // TODO: find a good, fast Javascript deepEqual function
       const circBuf = this._objByKey[keyFieldValue];
       circBuf.remove((x) => {
-        console.log('unmessage3 ' + JSON.stringify(unmessage) + ' ' + JSON.stringify(x[this._messageType]));
-        x[this._messageType] === unmessage
+        const ret = u.deepEqual(x[this._messageType], unmessage);
+        console.log('unmessage3 ' + JSON.stringify(unmessage) + ' ' + JSON.stringify(x[this._messageType]), ret);
+        return ret;
       });
     }
   }
