@@ -105,7 +105,16 @@
       function handleSubscribeButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#subscribe_channel').val();
-        var extra = $('#subscribe_extra').val();
+
+        // treat extra as JSON, if it parses,or as a string, if it doesn;t
+        var extra_str = $('#subscribe_extra').val();
+        var extra;
+        try {
+          extra = JSON.parse(extra_str);
+        } catch (e) {
+          extra = extra_str;
+        }
+
         var published_since = $('#subscribe_published_since').val();
         var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
         if (published_since) request.subscribe.published_since = published_since;
