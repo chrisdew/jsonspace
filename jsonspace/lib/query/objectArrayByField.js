@@ -36,13 +36,13 @@ class Query {
 
     let unmessage = ob[this._unmessageType];
     if (unmessage) {
-      console.log('unmessage ' + JSON.stringify(unmessage));
+      //console.log('unmessage ' + JSON.stringify(unmessage));
       let keyFieldValue = unmessage[this._keyField];
       if (!keyFieldValue) return;
-      console.log('unmessage1 ' + JSON.stringify(unmessage));
+      //console.log('unmessage1 ' + JSON.stringify(unmessage));
 
       if (!this._objByKey[keyFieldValue]) {
-        console.log('unmessage2 ' + JSON.stringify(unmessage));
+        //console.log('unmessage2 ' + JSON.stringify(unmessage));
         this._objByKey[keyFieldValue] = new cb.CircularBuffer(this._max);
       }
 
@@ -53,7 +53,7 @@ class Query {
       const circBuf = this._objByKey[keyFieldValue];
       circBuf.remove((x) => {
         const ret = u.deepEqual(x[this._messageType], unmessage);
-        console.log('unmessage3 ' + JSON.stringify(unmessage) + ' ' + JSON.stringify(x[this._messageType]), ret);
+        //console.log('unmessage3 ' + JSON.stringify(unmessage) + ' ' + JSON.stringify(x[this._messageType]), ret);
         return ret;
       });
     }
