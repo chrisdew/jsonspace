@@ -625,3 +625,56 @@ describe('updated_extra', function() {
   });
 });
 
+
+describe("upgrading shouldn't cause a new list of subscribers to be sent", function() {
+  it('should work', function (done) {
+    let conn_r;
+
+    const steps = [
+      // make two separate websocket connections to the server
+      () => conn_r = new WrappedWebSocket('conn_r', 'ws://localhost:8888/pubsub', next()),
+      () => conn_r.send({watch: {username: "user_r", channel: '#channel_8'}}, {
+        subscribers: {channel: '#channel_8', list: []}
+      }, next()),
+      () => { conn_r.send({subscribe: {username: 'user_r', channel: '#channel_8', extra: 'r_on_8'}}); next()(); },
+      () => setTimeout(next(), 1000), // don't finish the test until we've allowed some time for a bad response
+      () => conn_r.close(next()),
+      // the end
+      done
+    ];
+
+    // TODO: turn next and parallel into a module
+    // run the async actions in sequence
+    let i = 0;
+    let outstanding = 1;
+
+    function next() {
+      outstanding++;
+      return possiblyContinue;
+    }
+
+    function possiblyContinue() {
+      assert(outstanding > 0);
+      outstanding--;
+      if (outstanding === 0) {
+        process.nextTick(steps[i]);
+        //console.log(`running ${i}: ${steps[i]}`);
+        i++;
+      } else {
+        console.log(`waiting for ${outstanding} more callbacks before continuing`);
+      }
+    }
+
+    // and allow some actions to run in parallel with others
+    function parallel() {
+      outstanding++;
+      process.nextTick(steps[i]); // run the next step, in parallel
+      //console.log(`parallel running ${i}: ${steps[i]}`);
+      i++;
+      return possiblyContinue;
+    }
+
+    possiblyContinue(); // start running steps
+
+  });
+});
