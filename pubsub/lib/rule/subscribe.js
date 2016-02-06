@@ -17,10 +17,12 @@ function exec(ob, put, queries) {
   }
 
   // now close any watches that this user/conn_id has on this channel
+  let wasWatching = false;
   const watchResults = queries.watched$conn_id.results(ob.websocket_obj_rx.conn_id);
   for (const result of watchResults) {
     if (result.watched.channel === ob.websocket_obj_rx.data.subscribe.channel
         && result.watched.username === ob.websocket_obj_rx.data.subscribe.username) {
+      wasWatching = true;
       put({unwatched:result.watched});
     }
   }
@@ -39,7 +41,14 @@ function exec(ob, put, queries) {
 
   // request that a subscribers list is sent to this conn_id
   // - this is a workaround to let the query run *after* the query has been updated with the "subscribed" message which this rule has put
-  put({requested_subscribers:{channel:ob.websocket_obj_rx.data.subscribe.channel,conn_id:ob.websocket_obj_rx.conn_id,username:ob.websocket_obj_rx.data.subscribe.username}});
+  if (!wasWatching) { // do not send list if they were already watching this channel - https://github.com/chrisdew/jsonspace/issues/18
+    put({ requested_subscribers: {
+        channel: ob.websocket_obj_rx.data.subscribe.channel,
+        conn_id: ob.websocket_obj_rx.conn_id,
+        username: ob.websocket_obj_rx.data.subscribe.username
+      }
+    });
+  }
 
   // request that a history is sent to this conn_id
   const published_since = ob.websocket_obj_rx.data.subscribe.published_since;
