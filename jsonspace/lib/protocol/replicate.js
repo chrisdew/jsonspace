@@ -36,7 +36,12 @@ function listen(ob, put, getReferences) {
       //put({info:{ob_ip:ob_ip,client_ip:client_ip}});
       if (ob_ip === client_ip) continue; // don't send messages back to the node which created them
 
-      conns[i].write(JSON.stringify(ob) + '\n');
+      try {
+        conns[i].write(JSON.stringify(ob) + '\n');
+      } catch (e) {
+        put({replicate_error:{err:e}});
+        delete conns[i];
+      }
     }
   }
   return {types:ob.protocol.replicate.types, send:send};

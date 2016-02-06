@@ -9,6 +9,7 @@
   {"rule":{"type":"websocket_obj_rx","name":"watch"}},
   {"rule":{"type":"websocket_obj_rx","name":"unwatch"}},
   {"rule":{"type":"websocket_obj_rx","name":"unsubscribe"}},
+  {"rule":{"type":"heartbeat","name":"heartbeat"}},
   {"rule":{"type":"subscribed","name":"subscribedToSubscribers"}},
   {"rule":{"type":"requested_subscribers","name":"requestedSubscribersToRequester"}},
   {"rule":{"type":"requested_publisheds","name":"requestedPublishedsToRequester"}},
@@ -26,10 +27,12 @@
   {"query":{"name":"watched$channel","code":"objectArrayByField","args":["watched","unwatched","channel"]}},
   {"query":{"name":"watched$conn_id","code":"objectArrayByField","args":["watched","unwatched","conn_id"]}},
   {"query":{"name":"http_static_content$path","code":"objectByField","args":["http_static_content","http_static_discontent", "path"]}},
+  {"query":{"name":"heartbeat$host","code":"objectByField","args":["heartbeat",null,"host"]}},
   {"http_static_content":{"path":"/hello","data":"<html>Hello World</html>"}},
   {"http_static_content":{"path":"/","file":"index.html"}},
   {"http_static_content":{"path":"/pubsub/user_a","file":"pubsub.html"}},
   {"http_static_content":{"path":"/pubsub/user_b","file":"pubsub.html"}},
   {"http_static_content":{"path":"/pubsub/user_c","file":"pubsub.html"}},
+  {"heartbeat":{"interval":2000}},
   {}
 ]

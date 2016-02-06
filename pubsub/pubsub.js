@@ -26,6 +26,7 @@ function getAddresses() {
 // http://stackoverflow.com/questions/34835822/can-a-npm-dependency-require-a-module-from-its-parent-package
 const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().toISOString(), {
   dnsResponse: require('./lib/rule/dnsResponse'),
+  heartbeat: require('./lib/rule/heartbeat'),
   httpDebug: require('./lib/rule/httpDebug'),
   httpStatic: require('./lib/rule/httpStatic'),
   echo: require('./lib/rule/echo'),

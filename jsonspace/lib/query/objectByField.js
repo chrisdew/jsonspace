@@ -51,8 +51,12 @@ class Query {
     return this._objByKey[key];
   }
 
-  debug() {
+  all() {
     return this._objByKey;
+  }
+
+  debug() {
+    return this.all();
   }
 }
 

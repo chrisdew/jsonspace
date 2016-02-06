@@ -103,7 +103,8 @@ class Blackboard {
             });
           },
           this._queries,
-          this.isRemote.bind(this)
+          this.isRemote.bind(this),
+          this._ip
         );
         // FIXME: semantics - should this return, or just break?
         if (drop) return;

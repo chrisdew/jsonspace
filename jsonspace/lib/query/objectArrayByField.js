@@ -76,12 +76,16 @@ class Query {
     }
   }
 
-  debug() {
+  all() {
     const ret = {};
     for (const key in this._objByKey) {
       ret[key] = this._objByKey[key].toArray();
     }
     return ret;
+  }
+
+  debug() {
+    return this.all();
   }
 }
 
