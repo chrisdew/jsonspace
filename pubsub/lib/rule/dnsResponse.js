@@ -15,9 +15,6 @@ function exec(ob, put, queries) {
     const age = now - then;
     const ttl = 3 * heartbeat.interval;
     const ttl_secs = Math.ceil(ttl / 1000);
-    console.log('heartbeat', heartbeat);
-    console.log('ttl', ttl);
-    console.log('age', age);
     if (age < ttl) {
       answer.push({a:{name:ob.dns_request.question[0].name,address:host,ttl:(ttl_secs)}});
     }
