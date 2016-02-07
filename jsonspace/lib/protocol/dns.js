@@ -14,6 +14,7 @@ function listen(ob, put) {
     put({dns_request:{
       request_id: request_id,
       question: request.question,
+      from: request.address.address
     }});
   });
 

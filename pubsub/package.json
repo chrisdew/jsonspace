@@ -1,10 +1,11 @@
 {
   "name": "pubsub_jsonspace",
-  "version": "0.4.5",
+  "version": "0.4.6",
   "description": "websocket pub/sub server (unstable)",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha"
+    "start": "node pubsub.js",
+    "test": "./node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -18,20 +19,17 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
-    "ws": "^0.8.1",
-    "jsonspace": "^0.4.1",
+    "jsonspace": "^0.4.4",
+    "maxmind": "^0.6.0",
     "mocha": "^2.3.4",
+    "ws": "^0.8.1",
     "wscat": "^1.0.1"
   },
   "engines": {
-    "node" : ">=5.1.0 <6.0.0"
+    "node": ">=5.1.0 <6.0.0"
   },
   "os": [
     "darwin",
     "linux"
-  ],
-  "scripts": {
-    "start": "node pubsub.js",
-    "test": "./node_modules/.bin/mocha"
-  }
+  ]
 }
