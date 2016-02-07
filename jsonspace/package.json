@@ -1,6 +1,6 @@
 {
   "name": "jsonspace",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "jsonspace framework (unstable)",
   "main": "jsonspace.js",
   "scripts": {
@@ -32,5 +32,9 @@
   "os": [
     "darwin",
     "linux"
-  ]
+  ],
+  "scripts": {
+    "start": "node pubsub.js",
+    "test": "./node_modules/.bin/mocha"
+  }
 }
