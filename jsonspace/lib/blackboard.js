@@ -25,7 +25,7 @@ class Blackboard {
   }
 
   put(ob) {
-    try {
+    //try {
       // work out the type (simple the first property other than id)
       const type = u.firstNonIdPropertyName(ob);
       if (!type) return; // nothing to do
@@ -110,21 +110,21 @@ class Blackboard {
         if (drop) return;
       }
       this.pool(ob);
-    } catch (e) {
-      console.error('put error:', e, 'ref:', ob);
-    }
+    //} catch (e) {
+    //  console.error('put error:', e, 'ref:', ob);
+    //}
   }
 
   pool(ob) {
-    try {
+    //try {
     for (let name in this._queries) {
       //console.log('name', name);
       //console.log('this._queries', this._queries);
       this._queries[name].put(ob);
     }
-    } catch (e) {
-      console.error('pool error:', e, 'ref:', ob);
-    }
+    //} catch (e) {
+      //console.error('pool error:', e, 'ref:', ob);
+    //}
   }
 
   isRemote(ob) {

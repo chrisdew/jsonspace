@@ -17,7 +17,8 @@
       var local_state = {
         channels: {}, // a set of currently subscribed channels
         watches: {}, // a set of currently watched channels
-        username: null
+        username: null,
+        ping: true
       };
 
       var path_array = window.location.pathname.split('/');
@@ -44,6 +45,11 @@
             var data = JSON.parse(message.data);
             handleMessageData(data);
           };
+          setInterval(function() {
+            if (local_state.ping) {
+              send(JSON.stringify({ping:{}}));
+            }
+          }, 25000)
         };
         sock.onclose = function() {
           $('#comms_log').append('<li>websocket closed by server, please refresh page to continue</li>');
@@ -159,12 +165,26 @@
         $('#message').val('');
       }
 
+      function handlePingClick() {
+        local_state.ping = !local_state.ping;
+        if (local_state.ping) {
+          $('#ping').html('Stop Pinging');
+        } else {
+          $('#ping').html('Start Pinging');
+        }
+      }
+
     </script>
   </head>
   <body>
     <h1>pubsub placeholder app</h1>
     <h2>comms log:</h2>
     <ul id="comms_log"></ul>
+    <br/>
+    <h2>pings</h2>
+    <form>
+      <button id="ping" onclick="handlePingClick(); return false;">Stop Pinging</button>
+    </form>
     <br/>
     <h2>subscribe to a new channel</h2>
     <form>
