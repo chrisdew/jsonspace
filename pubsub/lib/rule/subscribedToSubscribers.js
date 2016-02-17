@@ -26,6 +26,9 @@ function exec(ob, put, queries, isRemote) {
     return;
   }
 
+  redacted.joined = redacted.subscribed;
+  delete redacted.subscribed;
+
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.subscribed.channel);
   for (const result of results) {
