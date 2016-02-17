@@ -1,7 +1,7 @@
 [
   {"protocol":{"replicate":{"listen":{"port":8008,"host":"0.0.0.0"},"types":["published","subscribed","unsubscribed","updated_extra","heartbeat"]}}},
   {"protocol":{"replication_client":{"connect":{"host":"106.186.121.210","port":8008},"put_types":["published","subscribed","unsubscribed","updated_extra","heartbeat"],"pool_types":[]}}},
-  {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"},"timeout":60000}}},
+  {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"},"timeout":300000}}},
   {"protocol":{"http":{"listen":{"port":8080}}}},
   {"protocol":{"dns":{"listen":{"port":53}}}},
   {"rule":{"type":"websocket_raw_rx","name":"rawToObj"}},
@@ -24,7 +24,7 @@
   {"rule":{"type":"dns_request","name":"dnsResponse"}},
   {"query":{"name":"subscribed$channel","code":"objectArrayByField","args":["subscribed","unsubscribed","channel"]}},
   {"query":{"name":"subscribed$conn_id","code":"objectArrayByField","args":["subscribed","unsubscribed","conn_id"]}},
-  {"query":{"name":"subscribed$conn_id$channel","code":"objectByTwoFields","args":["subscribed","unsubscribed","conn_id","channel"]}},
+  {"query":{"name":"subscribed$conn_id$channel","code":"objectArrayByTwoFields","args":["subscribed","unsubscribed","conn_id","channel"]}},
   {"query":{"name":"published$channel","code":"objectArrayByField","args":["published","unpublished","channel"]}},
   {"query":{"name":"watched$channel","code":"objectArrayByField","args":["watched","unwatched","channel"]}},
   {"query":{"name":"watched$conn_id","code":"objectArrayByField","args":["watched","unwatched","conn_id"]}},

@@ -23,7 +23,7 @@
   {"rule":{"type":"dns_request","name":"dnsResponse"}},
   {"query":{"name":"subscribed$channel","code":"objectArrayByField","args":["subscribed","unsubscribed","channel"]}},
   {"query":{"name":"subscribed$conn_id","code":"objectArrayByField","args":["subscribed","unsubscribed","conn_id"]}},
-  {"query":{"name":"subscribed$conn_id$channel","code":"objectByTwoFields","args":["subscribed","unsubscribed","conn_id","channel"]}},
+  {"query":{"name":"subscribed$conn_id$channel","code":"objectArrayByTwoFields","args":["subscribed","unsubscribed","conn_id","channel"]}},
   {"query":{"name":"published$channel","code":"objectArrayByField","args":["published","unpublished","channel"]}},
   {"query":{"name":"watched$channel","code":"objectArrayByField","args":["watched","unwatched","channel"]}},
   {"query":{"name":"watched$conn_id","code":"objectArrayByField","args":["watched","unwatched","conn_id"]}},

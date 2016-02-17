@@ -3,7 +3,7 @@
 /**
  * Created by chris on 14/12/2015.
  */
-
+const u = require('../util');
 
 class Query {
   constructor(name, messageType, unmessageType, keyField) {
@@ -30,10 +30,7 @@ class Query {
       if (!keyFieldValue) return;
 
       // only remove the object if it is the *same* object, not just an object with the same key
-      if (this._objByKey[keyFieldValue][this._messageType] === unmessage) {
-        // FIXME: this only work as long as the content of messages and unmessages are the same *object*
-        // it will break if they are only the same value of object
-        // TODO: find a good, fast Javascript deepEqual function
+      if (u.deepEqual(this._objByKey[keyFieldValue][this._messageType], unmessage)) {
         delete this._objByKey[keyFieldValue];
       }
     }
