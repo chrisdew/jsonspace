@@ -37,6 +37,9 @@ function exec(ob, put, queries, isRemote) {
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
 
+  // tell the subscribing client that it has subscribed
+  put({websocket_obj_tx:{conn_id:ob.subscribed.conn_id,obj:redacted}});
+
   // also send the message to each websocket connection which has watched the channel
   const watchResults = queries.watched$channel.results(ob.subscribed.channel);
   for (const watchResult of watchResults) {

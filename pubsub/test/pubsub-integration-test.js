@@ -132,15 +132,18 @@ describe('pubsub', function() {
       () => conn_b = new WrappedWebSocket('conn_b', 'ws://localhost:8888/pubsub', next()),
       // subscribe user_a to channel_0 and channel_1, subscribe user_b to just channel 0
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}}, {
-        members: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}]}
+        joined: { username: 'user_a', channel: '#channel_0', extra: 'a_on_0'}
       }, next()),
+      () => conn_a.expect({members: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}]}}, next()),
       () => conn_a.expect({joined: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, parallel()),
       () => conn_b.send({subscribe: {username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}}, {
-        members: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}, {username: "user_b", extra: "b_on_0"}]}
+        joined: { username: 'user_b', channel: '#channel_0', extra: 'b_on_0'}
       }, next()),
+      () => conn_b.expect({members: {channel: '#channel_0', list:[{username: "user_a", extra: "a_on_0"}, {username: "user_b", extra: "b_on_0"}]}}, next()),
       () => conn_a.send({subscribe: {username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}}, {
-        members: {channel: '#channel_1', list:[{username: "user_a", extra: "a_on_1"}]}
+        joined: { username: 'user_a', channel: '#channel_1', extra: 'a_on_1'}
       }, next()),
+      () => conn_a.expect({members: {channel: '#channel_1', list:[{username: "user_a", extra: "a_on_1"}]}}, next()),
       // user_a publishes on channel_0, only user_b will receive the data, as there is no echo
       () => conn_b.expect({
         published: {
@@ -236,8 +239,9 @@ describe('watch', function() {
       }, next()),
       () => conn_c.expect({joined: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
       () => conn_d.send({subscribe: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, {
-        members: {channel: '#channel_2', list:[{username: 'user_d', extra: 'd_on_2'}]}
+        joined: { username: 'user_d', channel: '#channel_2', extra: 'd_on_2' }
       }, next()),
+      () => conn_d.expect({members: {channel: '#channel_2', list:[{username: 'user_d', extra: 'd_on_2'}]}}, next()),
       // close one of the members and make sure that they are removed form the subscriber objectArrayByField query
       // results
       () => conn_c.expect({left: {username: 'user_d', channel: '#channel_2', extra: 'd_on_2'}}, parallel()),
@@ -300,8 +304,9 @@ describe('unsubscribe', function() {
       }, next()),
       () => conn_e.expect({joined: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => conn_f.send({subscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, {
-        members:{channel: '#channel_3', list:[{"username": "user_f", "extra": "f_on_3"}]}
+        joined: { username: 'user_f', channel: '#channel_3', extra: 'f_on_3' }
       }, next()),
+      () => conn_f.expect({members:{channel: '#channel_3', list:[{"username": "user_f", "extra": "f_on_3"}]}}, next()),
       () => conn_e.expect({left: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}, parallel()),
       () => { conn_f.send({unsubscribe: {username: 'user_f', channel: '#channel_3', extra: 'f_on_3'}}); next()(); },
       () => conn_e.close(next()),
@@ -349,8 +354,8 @@ describe('unwat_ch', function() {
 
     const steps = [
       // make two separate websocket connections to the server
-      () => conn_g = new WrappedWebSocket('conn_e', 'ws://localhost:8888/pubsub', parallel()),
-      () => conn_h = new WrappedWebSocket('conn_f', 'ws://localhost:8888/pubsub', next()),
+      () => conn_g = new WrappedWebSocket('conn_g', 'ws://localhost:8888/pubsub', parallel()),
+      () => conn_h = new WrappedWebSocket('conn_h', 'ws://localhost:8888/pubsub', next()),
       () => conn_g.send({watch: {username: "user_g", channel: '#channel_4'}}, {
         members: {channel: '#channel_4', list: []}
       }, next()),
@@ -358,11 +363,12 @@ describe('unwat_ch', function() {
         conn_g.send({unwatch: {username: "user_g", channel: '#channel_4'}});
         next()();
       },
-      // conn_h should receive nothing in response to conn_h subscribing, as it has unwatched
-      () => conn_g.wait(100, parallel()),
       () => conn_h.send({subscribe: {username: 'user_h', channel: '#channel_4', extra: 'h_on_4'}}, {
-        members: {channel: '#channel_4', list: [{username: "user_h" , extra: "h_on_4"}]}
+        joined: { username: 'user_h', channel: '#channel_4', extra: 'h_on_4' }
       }, next()),
+      () => conn_h.expect({members: {channel: '#channel_4', list: [{username: "user_h" , extra: "h_on_4"}]}}, next()),
+      // conn_g should receive nothing in response to conn_h subscribing, as it has unwatched
+      () => conn_g.wait(100, parallel()),
       () => conn_g.close(next()),
       () => conn_h.close(next()),
       // the end
@@ -421,8 +427,9 @@ describe('multisub', function() {
       }, next()),
       () => conn_i.expect({joined: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, parallel()),
       () => conn_j.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
-        members: {channel: '#channel_5', list:[{username: "user_j", extra: "j_on_5"}]}
+        joined: { username: 'user_j', channel: '#channel_5', extra: 'j_on_5' }
       }, next()),
+      () => conn_j.expect({members: {channel: '#channel_5', list:[{username: "user_j", extra: "j_on_5"}]}}, next()),
       // conn_i should not be told about the new subscription, as it is being made by user_j, who has already joined
       () => conn_i.wait(100, parallel()),
       () => conn_k.send({subscribe: {username: 'user_j', channel: '#channel_5', extra: 'j_on_5'}}, {
@@ -489,8 +496,9 @@ describe('updated_extra', function() {
       }, next()),
       () => conn_l.expect({joined: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, parallel()),
       () => conn_m.send({subscribe: {username: 'user_m', channel: '#channel_6', extra: 'm_on_6'}}, {
-        members: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6'}]}
+        joined: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6' }
       }, next()),
+      () => conn_m.expect({members: {channel: '#channel_6', list: [{username: 'user_m', extra: 'm_on_6'}]}}, next()),
       // conn_l should not be told about the new subscription, as it is being made by user_m, who has already joined
       // but should be told about the updated_extra
       () => conn_l.expect({ updated_extra: { username: 'user_m', channel: '#channel_6', extra: 'm_on_6_updated' }}, parallel()),
@@ -558,8 +566,9 @@ describe('updated_extra', function() {
         // make two separate websocket connections to the server
         () => conn_o = new WrappedWebSocket('conn_o', 'ws://localhost:8888/pubsub', next()),
         () => conn_o.send({subscribe: {username: 'user_o', channel: '#channel_7', extra: 'o_on_7'}}, {
-          members: {channel: '#channel_7', list: [{username: "user_o", extra: "o_on_7"}]}
+          joined: { username: 'user_o', channel: '#channel_7', extra: 'o_on_7' }
         }, next()),
+        () => conn_o.expect({members: {channel: '#channel_7', list: [{username: "user_o", extra: "o_on_7"}]}}, next()),
         () => {
           conn_o.send({publish: {channel: '#channel_7', data: 'first on channel 7'}});
           next()();
@@ -575,8 +584,9 @@ describe('updated_extra', function() {
             published_since: '1970-01-01T00:00:00.000Z'
           }
         }, {
-          members: {channel: '#channel_7', list: [{username: "user_p", extra: "p_on_7"}]}
+          joined: { username: 'user_p', channel: '#channel_7', extra: 'p_on_7' }
         }, next()),
+        () => conn_p.expect({members: {channel: '#channel_7', list: [{username: "user_p", extra: "p_on_7"}]}}, next()),
         () => conn_p.expect({
           published: {
             username: 'user_o',
@@ -636,7 +646,9 @@ describe("upgrading shouldn't cause a new list of members to be sent", function(
       () => conn_r.send({watch: {username: "user_r", channel: '#channel_8'}}, {
         members: {channel: '#channel_8', list: []}
       }, next()),
-      () => { conn_r.send({subscribe: {username: 'user_r', channel: '#channel_8', extra: 'r_on_8'}}); next()(); },
+      () => conn_r.send({subscribe: {username: 'user_r', channel: '#channel_8', extra: 'r_on_8'}}, {
+        joined: {username: 'user_r', channel: '#channel_8', extra: 'r_on_8'}
+      }, next()),
       () => setTimeout(next(), 1000), // don't finish the test until we've allowed some time for a bad response
       () => conn_r.close(next()),
       // the end
@@ -677,59 +689,6 @@ describe("upgrading shouldn't cause a new list of members to be sent", function(
     possiblyContinue(); // start running steps
 
   });
-  describe("upgrading shouldn't cause a new list of members to be sent", function() {
-    it('should work', function (done) {
-      let conn_r;
-
-      const steps = [
-        // make two separate websocket connections to the server
-        () => conn_r = new WrappedWebSocket('conn_r', 'ws://localhost:8888/pubsub', next()),
-        () => conn_r.send({watch: {username: "user_r", channel: '#channel_8'}}, {
-          members: {channel: '#channel_8', list: []}
-        }, next()),
-        () => { conn_r.send({subscribe: {username: 'user_r', channel: '#channel_8', extra: 'r_on_8'}}); next()(); },
-        () => setTimeout(next(), 1000), // don't finish the test until we've allowed some time for a bad response
-        () => conn_r.close(next()),
-        // the end
-        done
-      ];
-
-      // TODO: turn next and parallel into a module
-      // run the async actions in sequence
-      let i = 0;
-      let outstanding = 1;
-
-      function next() {
-        outstanding++;
-        return possiblyContinue;
-      }
-
-      function possiblyContinue() {
-        assert(outstanding > 0);
-        outstanding--;
-        if (outstanding === 0) {
-          process.nextTick(steps[i]);
-          //console.log(`running ${i}: ${steps[i]}`);
-          i++;
-        } else {
-          console.log(`waiting for ${outstanding} more callbacks before continuing`);
-        }
-      }
-
-      // and allow some actions to run in parallel with others
-      function parallel() {
-        outstanding++;
-        process.nextTick(steps[i]); // run the next step, in parallel
-        //console.log(`parallel running ${i}: ${steps[i]}`);
-        i++;
-        return possiblyContinue;
-      }
-
-      possiblyContinue(); // start running steps
-
-    });
-
-  });
 });
 
 
@@ -745,8 +704,9 @@ describe("user list should only contain the latest subscriptions for each userna
       () => conn_t = new WrappedWebSocket('conn_t', 'ws://localhost:8888/pubsub', next()),
       () => conn_u = new WrappedWebSocket('conn_u', 'ws://localhost:8888/pubsub', next()),
       () => conn_s.send({subscribe: {username: "user_s", channel: '#channel_9', extra: 's_on_9'}}, {
-        members: {channel: '#channel_9', list: [{"extra": "s_on_9", "username": "user_s"}]}
+        joined: { username: 'user_s', channel: '#channel_9', extra: 's_on_9' }
       }, next()),
+      () => conn_s.expect({members: {channel: '#channel_9', list: [{"extra": "s_on_9", "username": "user_s"}]}}, next()),
       () => conn_t.send({subscribe: {username: "user_s", channel: '#channel_9', extra: 's_on_9'}}, {
         members: {channel: '#channel_9', list: [{"extra": "s_on_9", "username": "user_s"}]}
       }, next()),
