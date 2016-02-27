@@ -7,7 +7,7 @@
 function firstNonIdPropertyName(ob) {
   let p = null;
   for (p in ob) {
-    if (p != 'id') {
+    if (p != 'id' && p != 'local') {
       break;
     }
   }

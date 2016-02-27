@@ -16,12 +16,21 @@ function listen(ob, put, getReferences) {
     put({replicate_connected:{
       conn_id:conn_id,
       tcp_conn:tcp_conn,
+      server:client_addr
     }});
     // send contents of pool on connection
     const refs = getReferences(ob.protocol.replicate.types);
     for (const i in refs) {
       connection.write(JSON.stringify(refs[i]) + '\n');
     }
+
+    connection.on('close', () => {
+      put({replicate_disconnected:{
+        conn_id:conn_id,
+        tcp_conn:tcp_conn,
+        server:client_addr
+      }});
+    });
   });
 
   // TODO: remove closed/errored clients form conns
@@ -35,6 +44,7 @@ function listen(ob, put, getReferences) {
       const client_ip = i.split('|')[1];
       //put({info:{ob_ip:ob_ip,client_ip:client_ip}});
       if (ob_ip === client_ip) continue; // don't send messages back to the node which created them
+      if (ob.local) continue; // don't send explicitly local messages
 
       try {
         conns[i].write(JSON.stringify(ob) + '\n');

@@ -25,6 +25,7 @@ function getAddresses() {
 // FIXME: manually requiring modules and passing them to the blackboard is horrible.
 // http://stackoverflow.com/questions/34835822/can-a-npm-dependency-require-a-module-from-its-parent-package
 const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().toISOString(), {
+  localUnsubscribedOnReplicateDisconnected: require('./lib/rule/localUnsubscribedOnReplicateDisconnected'),
   dnsResponse: require('./lib/rule/dnsResponse'),
   heartbeat: require('./lib/rule/heartbeat'),
   httpDebug: require('./lib/rule/httpDebug'),

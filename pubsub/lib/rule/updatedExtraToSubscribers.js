@@ -8,6 +8,7 @@ function exec(ob, put, queries, isRemote) {
   // *never* mutate existing message objects, always klone first
   const redacted = u.klone(ob);
   delete redacted.updated_extra.conn_id; // don't leak connection data
+  delete redacted.updated_extra.server; // don't leak connection data
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.updated_extra.channel);

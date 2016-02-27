@@ -8,6 +8,7 @@ function exec(ob, put, queries, isRemote) {
   // *never* mutate existing message objects, always klone first
   const redacted = u.klone(ob);
   delete redacted.unsubscribed.conn_id; // don't leak connection data
+  delete redacted.unsubscribed.server; // don't leak connection data
 
   // if this is not the first subscription for the username/channel combo, don't bother to inform
   // other subscribers/watchers

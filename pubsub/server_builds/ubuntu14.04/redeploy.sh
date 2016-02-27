@@ -22,3 +22,4 @@ ssh $USER@$MACHINE "if ( status pubsub | grep start ); then stop pubsub ; fi"
 ssh $USER@$MACHINE rm -rf /srv/node_modules/pubsub
 ssh $USER@$MACHINE "cd /srv/node_modules ; tar -xzvf pubsub.tgz"
 ssh $USER@$MACHINE start pubsub
+
