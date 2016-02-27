@@ -14,12 +14,11 @@ MACHINE=$1
 # install pubsub
 ssh $USER@$MACHINE mkdir -p /srv/node_modules
 ssh $USER@$MACHINE mkdir -p /var/log/pubsub
-bash -c "cd ../../../ ; tar --dereference -czvf /tmp/pubsub.tgz pubsub"
-scp /tmp/pubsub.tgz $USER@$MACHINE:/srv/node_modules/
 scp ./upstart/pubsub.conf $USER@$MACHINE:/etc/init/
 scp ../../etc/$MACHINE/pubsub.json $USER@$MACHINE:/etc/
 ssh $USER@$MACHINE "if ( status pubsub | grep start ); then stop pubsub ; fi"
-ssh $USER@$MACHINE rm -rf /srv/node_modules/pubsub
-ssh $USER@$MACHINE "cd /srv/node_modules ; tar -xzvf pubsub.tgz"
+rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress ../../../pubsub $USER@$MACHINE:/srv/node_modules/
+rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress ../../../jsonspace $USER@$MACHINE:/srv/node_modules/
+ssh $USER@$MACHINE "cd /srv/node_modules ; rm -f pubsub/node_modules/jsonspace"
 ssh $USER@$MACHINE start pubsub
 
