@@ -30,6 +30,7 @@ const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().
   heartbeat: require('./lib/rule/heartbeat'),
   httpDebug: require('./lib/rule/httpDebug'),
   httpStatic: require('./lib/rule/httpStatic'),
+  publishedToPushserver: require('./lib/rule/publishedToPushserver'),
   echo: require('./lib/rule/echo'),
   publish: require('./lib/rule/publish'),
   publishedToSubscribers: require('./lib/rule/publishedToSubscribers'),
