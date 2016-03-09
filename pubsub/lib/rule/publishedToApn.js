@@ -16,42 +16,21 @@ function exec(ob, put, queries, isRemote) {
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.published.channel);
-  const users = [];
+  const tokens = [];
   for (const result of results) {
-    users.push(result.subscribed.username);
+    if (!result.subscribed.apn) continue;
+    tokens.push(result.subscribed.apn.token);
   }
-  const deduped = u.dedupArrayOfStrings(users);
+  const deduped = u.dedupArrayOfStrings(tokens);
 
-  const data = JSON.stringify({
-    users: deduped,
-    android:{
-      collapseKey: "optional",
-      data:{
-        message: redacted
+  for (const token of deduped) {
+    put({
+      apn_obj_tx: {
+        token: token,
+        payload: redacted
       }
-    },
-    ios:{
-      badge: 0,
-      alert: redacted,
-      sound: "soundName"
-    }
-  });
-
-  put({
-    http_client_request:{
-      options: {
-        hostname: 'localhost',
-        port: 8010,
-        path: '/send',
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': data.length
-        }
-      },
-      data:data
-    }
-  });
+    });
+  }
 }
 
 exports.exec = exec;

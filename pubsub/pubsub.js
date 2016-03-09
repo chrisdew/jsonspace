@@ -30,7 +30,7 @@ const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().
   heartbeat: require('./lib/rule/heartbeat'),
   httpDebug: require('./lib/rule/httpDebug'),
   httpStatic: require('./lib/rule/httpStatic'),
-  publishedToPushserver: require('./lib/rule/publishedToPushserver'),
+  publishedToApn: require('./lib/rule/publishedToApn'),
   echo: require('./lib/rule/echo'),
   publish: require('./lib/rule/publish'),
   publishedToSubscribers: require('./lib/rule/publishedToSubscribers'),
@@ -67,7 +67,7 @@ for (const filename of filenames) {
       try {
         blackboard.put(message);
       } catch (e) {
-        blackboard.put({config_error:{ref:message}});
+        blackboard.put({config_error:{ref:message,err:e}});
       }
     }
     configRead = true;

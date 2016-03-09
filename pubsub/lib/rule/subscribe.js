@@ -33,7 +33,8 @@ function exec(ob, put, queries) {
       username:ob.websocket_obj_rx.data.subscribe.username,
       channel:ob.websocket_obj_rx.data.subscribe.channel,
       extra:ob.websocket_obj_rx.data.subscribe.extra,
-      server:ob.id.split('|')[2]
+      server:ob.id.split('|')[2],
+      apn:ob.websocket_obj_rx.data.subscribe.apn
     }
   };
 

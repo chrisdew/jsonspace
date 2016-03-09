@@ -1,9 +1,10 @@
 {
   "name": "jsonspace",
-  "version": "0.4.9",
+  "version": "0.5.0",
   "description": "jsonspace framework (unstable)",
   "main": "jsonspace.js",
   "scripts": {
+    "start": "node pubsub.js",
     "test": "./node_modules/.bin/mocha"
   },
   "repository": {
@@ -18,6 +19,7 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
+    "apn": "^1.7.5",
     "byline": "^4.2.1",
     "native-dns": "^0.7.0",
     "ws": "^0.8.1"
@@ -32,9 +34,5 @@
   "os": [
     "darwin",
     "linux"
-  ],
-  "scripts": {
-    "start": "node pubsub.js",
-    "test": "./node_modules/.bin/mocha"
-  }
+  ]
 }

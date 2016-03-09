@@ -133,12 +133,15 @@
         }
 
         var published_since = $('#subscribe_published_since').val();
+        var apn_token = $('#subscribe_apn_token').val();
         var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
         if (published_since) request.subscribe.published_since = published_since;
+        if (apn_token) request.subscribe.apn = {token:apn_token};
         send(JSON.stringify(request));
         $('#subscribe_channel').val('');
         $('#subscribe_extra').val('');
         $('#subscribe_published_since').val('');
+        $('#subscribe_apn_token').val('');
         addToChannels(channel);
         removeFromWatched(channel);
       }
@@ -205,11 +208,12 @@
       <button id="ping" onclick="handlePingClick(); return false;">Stop Pinging</button>
     </form>
     <br/>
-    <h2>subscribe to a new channel</h2>
+    <h2>subscribe to a channel</h2>
     <form>
       <label>channel:<input id="subscribe_channel" type="text"></label>
       <label>extra: <input id="subscribe_extra" type="text"></label>
       <label>published_since (optional): <input id="subscribe_published_since" type="text"></label>
+      <label>apn token (optional): <input id="subscribe_apn_token" type="text"></label>
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <br/>
@@ -227,7 +231,7 @@
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
     <br/>
-    <h2>watch a new channel</h2>
+    <h2>watch a channel</h2>
     <form>
       <label>channel:<input id="watch_channel" type="text"></label>
       <button id="watch" onclick="handleWatchButtonClick(); return false;">Watch</button>
