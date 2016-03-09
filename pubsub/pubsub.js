@@ -40,6 +40,7 @@ const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().
   subscribe: require('./lib/rule/subscribe'),
   subscribedToSubscribers: require('./lib/rule/subscribedToSubscribers'),
   unsubscribe: require('./lib/rule/unsubscribe'),
+  unsubscribeAll: require('./lib/rule/unsubscribeAll'),
   unsubscribedOnDisconnect: require('./lib/rule/unsubscribedOnDisconnect'),
   unsubscribedToSubscribers: require('./lib/rule/unsubscribedToSubscribers'),
   unwatch: require('./lib/rule/unwatch'),

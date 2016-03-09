@@ -10,6 +10,7 @@
   {"rule":{"type":"websocket_obj_rx","name":"watch"}},
   {"rule":{"type":"websocket_obj_rx","name":"unwatch"}},
   {"rule":{"type":"websocket_obj_rx","name":"unsubscribe"}},
+  {"rule":{"type":"websocket_obj_rx","name":"unsubscribeAll"}},
   {"rule":{"type":"heartbeat","name":"heartbeat"}},
   {"rule":{"type":"subscribed","name":"subscribedToSubscribers"}},
   {"rule":{"type":"requested_subscribers","name":"requestedSubscribersToRequester"}},
