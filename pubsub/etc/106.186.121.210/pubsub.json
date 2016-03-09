@@ -18,7 +18,6 @@
   {"rule":{"type":"requested_publisheds","name":"requestedPublishedsToRequester"}},
   {"rule":{"type":"updated_extra","name":"updatedExtraToSubscribers"}},
   {"rule":{"type":"published","name":"publishedToSubscribers"}},
-  {"rule":{"type":"published","name":"publishedToPushserver"}},
   {"rule":{"type":"unsubscribed","name":"unsubscribedToSubscribers"}},
   {"rule":{"type":"websocket_disconnected","name":"unsubscribedOnDisconnect"}},
   {"rule":{"type":"websocket_disconnected","name":"unwatchedOnDisconnect"}},

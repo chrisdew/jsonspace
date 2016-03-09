@@ -15,8 +15,8 @@ MACHINE=$1
 ssh $USER@$MACHINE "mkdir -p /srv/node_modules ; mkdir -p /var/log/pubsub"
 scp ./upstart/pubsub.conf ./upstart/pushserver.conf $USER@$MACHINE:/etc/init/
 scp ../../etc/$MACHINE/pubsub.json ../../etc/$MACHINE/pushserver.json $USER@$MACHINE:/etc/
-ssh $USER@$MACHINE "if ( status pubsub | grep start ); then stop pubsub ; fi ; if ( status pushserver | grep start ); then stop pushserver ; fi"
+ssh $USER@$MACHINE "if ( status pubsub | grep start ); then stop pubsub ; fi"
 rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress ../../../pubsub $USER@$MACHINE:/srv/node_modules/
 rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress ../../../jsonspace $USER@$MACHINE:/srv/node_modules/
-ssh $USER@$MACHINE "cd /srv/node_modules ; rm -f pubsub/node_modules/jsonspace ; start pubsub ; start pushserver"
+ssh $USER@$MACHINE "cd /srv/node_modules ; rm -f pubsub/node_modules/jsonspace ; start pubsub"
 

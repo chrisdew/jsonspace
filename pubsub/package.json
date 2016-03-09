@@ -22,7 +22,6 @@
     "jsonspace": "^0.4.7",
     "maxmind": "^0.6.0",
     "mocha": "^2.3.4",
-    "node-pushserver": "^0.5.4",
     "ws": "^0.8.1",
     "wscat": "^1.0.1"
   },
