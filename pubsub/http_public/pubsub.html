@@ -95,8 +95,9 @@
 
       // A very weak substitute for ReactJS
       function refreshDisplay(local_state) {
-        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel'];
-        var options = [local_state.channels, local_state.channels, local_state.watches];
+        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel', '#unwatch_and_unsubscribe_channel'];
+        var both = merge(local_state.watches, local_state.channels);
+        var options = [local_state.channels, local_state.channels, local_state.watches, both];
         for (var i in ids) {
           var id = ids[i];
           // add the channel options to the select
@@ -105,7 +106,17 @@
           for (var channel in options[i]) {
             select.append('<option value="' + channel + '">' + channel + '</option>');
           }
-        };
+        }
+      }
+
+      function merge() {
+        var ret = {};
+        for (var i in arguments) {
+          for (var p in arguments[i]) {
+            ret[p] = arguments[i][p];
+          }
+        }
+        return ret;
       }
 
       function handleSubscribeButtonClick() {
@@ -136,6 +147,14 @@
         console.log('handleUnsubscribeButtonClick');
         var channel = $('#unsubscribe_channel').val();
         send(JSON.stringify({unsubscribe:{username:local_state.username,channel:channel}}));
+        removeFromChannels(channel);
+        removeFromWatched(channel);
+      }
+
+      function handleUnwatchAndUnsubscribeButtonClick() {
+        console.log('handleUnsubscribeButtonClick');
+        var channel = $('#unwatch_and_unsubscribe_channel').val();
+        send(JSON.stringify({unwatch_and_unsubscribe:{username:local_state.username,channel:channel}}));
         removeFromChannels(channel);
         removeFromWatched(channel);
       }
@@ -198,6 +217,13 @@
     <form>
       <select id="unsubscribe_channel"></select>
       <button id="unsubscribe" onclick="handleUnsubscribeButtonClick(); return false;">Unsubscribe</button>
+    </form>
+    <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
+    <br/>
+    <h2>unwatch and unsubscribe from a channel</h2>
+    <form>
+      <select id="unwatch_and_unsubscribe_channel"></select>
+      <button id="unwatch_and_unsubscribe" onclick="handleUnwatchAndUnsubscribeButtonClick(); return false;">Unwatch And Unsubscribe</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
     <br/>
