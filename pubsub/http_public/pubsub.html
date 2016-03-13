@@ -182,9 +182,24 @@
       function handlePublishButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#publish_channel').val();
-        var data = $('#message').val();
-        send(JSON.stringify({publish:{channel:channel,data:data}}));
+
+        var data_str = $('#message').val();
+        var data;
+        try {
+          data = JSON.parse(data_str);
+        } catch (e) {
+          data = data_str;
+        }
+
+        var apn_alert = $('publish_apn_alert').val();
+        var request = {publish:{channel:channel,data:data}};
+        if (apn_alert) {
+          request.publish.apn = {alert:apn_alert};
+        }
+        send(JSON.stringify(request));
         $('#message').val('');
+        // the user probably wants to use the same apn_alert for multiple messages
+        // $('#publish_apn_alert').val('');
       }
 
       function handlePingClick() {
@@ -247,7 +262,8 @@
     <h2>publish a new message</h2>
     <form>
       <select id="publish_channel"></select>
-      <input id="message" type="text">
+      <label>data:<input id="message" type="text"></label>
+      <label>apn_alert<input id="publish_apn_alert" type="text"></label>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>

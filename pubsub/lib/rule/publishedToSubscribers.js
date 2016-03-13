@@ -8,6 +8,7 @@ function exec(ob, put, queries, isRemote) {
   // *never* mutate existing message objects, always klone first
   const redacted = u.klone(ob);
   delete redacted.published.conn_id; // don't leak connection data
+  delete redacted.published.apn; // don't leak apple push data
 
   // send the message to each websocket connection which has subscribed to the channel
   const results = queries.subscribed$channel.results(ob.published.channel);
