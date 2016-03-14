@@ -1,6 +1,6 @@
 {
   "name": "jsonspace",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "jsonspace framework (unstable)",
   "main": "jsonspace.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "apn": "^1.7.5",
     "byline": "^4.2.1",
     "native-dns": "^0.7.0",
+    "node-gcm": "^0.14.0",
     "ws": "^0.8.1"
   },
   "devDependencies": {

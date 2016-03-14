@@ -34,7 +34,8 @@ function exec(ob, put, queries) {
       channel:ob.websocket_obj_rx.data.subscribe.channel,
       extra:ob.websocket_obj_rx.data.subscribe.extra,
       server:ob.id.split('|')[2],
-      apn:ob.websocket_obj_rx.data.subscribe.apn
+      apn:ob.websocket_obj_rx.data.subscribe.apn,
+      gcm:ob.websocket_obj_rx.data.subscribe.gcm
     }
   };
 

@@ -134,14 +134,17 @@
 
         var published_since = $('#subscribe_published_since').val();
         var apn_token = $('#subscribe_apn_token').val();
+        var gcm_token = $('#subscribe_gcm_token').val();
         var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
         if (published_since) request.subscribe.published_since = published_since;
         if (apn_token) request.subscribe.apn = {token:apn_token};
+        if (gcm_token) request.subscribe.gcm = {token:gcm_token};
         send(JSON.stringify(request));
         $('#subscribe_channel').val('');
         $('#subscribe_extra').val('');
         $('#subscribe_published_since').val('');
         $('#subscribe_apn_token').val('');
+        $('#subscribe_gcm_token').val('');
         addToChannels(channel);
         removeFromWatched(channel);
       }
@@ -192,14 +195,19 @@
         }
 
         var apn_alert = $('publish_apn_alert').val();
+        var gcm_title = $('publish_gcm_title').val();
         var request = {publish:{channel:channel,data:data}};
         if (apn_alert) {
           request.publish.apn = {alert:apn_alert};
+        }
+        if (gcm_title) {
+          request.publish.gcm = {title:gcm_title};
         }
         send(JSON.stringify(request));
         $('#message').val('');
         // the user probably wants to use the same apn_alert for multiple messages
         // $('#publish_apn_alert').val('');
+        // $('#publish_gcm_title').val('');
       }
 
       function handlePingClick() {
@@ -228,7 +236,10 @@
       <label>channel:<input id="subscribe_channel" type="text"></label>
       <label>extra: <input id="subscribe_extra" type="text"></label>
       <label>published_since (optional): <input id="subscribe_published_since" type="text"></label>
+      <br>
       <label>apn token (optional): <input id="subscribe_apn_token" type="text"></label>
+      <label>gcm token (optional): <input id="subscribe_gcm_token" type="text"></label>
+      <br>
       <button id="subscribe" onclick="handleSubscribeButtonClick(); return false;">Subscribe</button>
     </form>
     <br/>
@@ -264,6 +275,7 @@
       <select id="publish_channel"></select>
       <label>data:<input id="message" type="text"></label>
       <label>apn_alert<input id="publish_apn_alert" type="text"></label>
+      <label>gcm_title<input id="publish_gcm_title" type="text"></label>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
