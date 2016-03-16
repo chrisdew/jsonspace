@@ -194,8 +194,8 @@
           data = data_str;
         }
 
-        var apn_alert = $('publish_apn_alert').val();
-        var gcm_title = $('publish_gcm_title').val();
+        var apn_alert = $('#publish_apn_alert').val();
+        var gcm_title = $('#publish_gcm_title').val();
         var request = {publish:{channel:channel,data:data}};
         if (apn_alert) {
           request.publish.apn = {alert:apn_alert};
@@ -274,8 +274,8 @@
     <form>
       <select id="publish_channel"></select>
       <label>data:<input id="message" type="text"></label>
-      <label>apn_alert<input id="publish_apn_alert" type="text"></label>
-      <label>gcm_title<input id="publish_gcm_title" type="text"></label>
+      <label>apn.alert<input id="publish_apn_alert" type="text"></label>
+      <label>gcm.title<input id="publish_gcm_title" type="text"></label>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
