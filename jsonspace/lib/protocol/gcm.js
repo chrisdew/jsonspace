@@ -12,13 +12,13 @@ function listen(ob, put, getReferences) {
 
     var message = new gcm.Message({
       //collapseKey: 'demo',
-      priority: 'high',
-      contentAvailable: true,
-      delayWhileIdle: true,
-      timeToLive: 3,
-      restrictedPackageName: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : null,
+      //priority: 'high',
+      //contentAvailable: true,
+      //delayWhileIdle: true,
+      //timeToLive: 3,
+      //restrictedPackageName: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : null,
       //dryRun: true,
-      data: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : {},
+      //data: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : {},
       notification: {
         title: ob.gcm_obj_tx.title ? ob.gcm_obj_tx.title : "title",
         icon: ob.gcm_obj_tx.icon ? ob.gcm_obj_tx.icon : "ic_launcher",
@@ -26,8 +26,14 @@ function listen(ob, put, getReferences) {
       }
     });
 
+    message.addData('data', ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : {});
+
+    console.log('SENDING:', message);
+    console.log('SENDING:', JSON.stringify(message));
+    console.log('to: ' + ob.gcm_obj_tx.token);
+
     // TODO: this is made to work just like APN, even though sending individually is inefficient
-    sender.sendNoRetry(message, { registrationTokens: [ob.gcm_obj_tx.token] }, function(err, response) {
+    sender.send(message, { registrationTokens: [ob.gcm_obj_tx.token] }, function(err, response) {
       if (err) {
         console.error(err);
       } else {
