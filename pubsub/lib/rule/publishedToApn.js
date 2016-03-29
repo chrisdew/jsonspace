@@ -30,6 +30,8 @@ function exec(ob, put, queries, isRemote) {
   const deduped = u.dedupArrayOfStrings(tokens);
 
   for (const token of deduped) {
+    if (!token.match(/^([0-9a-fA-F][0-9a-fA-F])+$/)) continue; // skip bad tokens
+
     var obj = ob.published.apn ? ob.published.apn : {};
     obj.token = token;
     obj.payload = redacted;
