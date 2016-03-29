@@ -11,6 +11,8 @@ function exec(ob, put, queries, isRemote) {
   // TODO: we could send APNs from the each *subscriber's* server instead of the "publisher's" server - would this be better in any way?
   if (isRemote(ob)) return;
 
+  if (!ob.published.apn) return; // only send published messages which have an apn object, over apn
+
   // *never* mutate existing message objects, always klone first
   const redacted = u.klone(ob);
   delete redacted.published.conn_id; // don't leak connection data

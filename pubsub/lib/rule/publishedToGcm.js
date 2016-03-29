@@ -12,6 +12,8 @@ function exec(ob, put, queries, isRemote) {
   // For *GCM* this propbably wouldn't be better, as we can (in future) send multiple GCMs at once
   if (isRemote(ob)) return;
 
+  if (!ob.published.gcm) return; // only send published messages which have an gcm object, over gcm
+
   // *never* mutate existing message objects, always klone first
   const redacted = u.klone(ob);
   delete redacted.published.conn_id; // don't leak connection data
