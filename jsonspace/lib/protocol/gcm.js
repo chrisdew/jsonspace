@@ -33,7 +33,13 @@ function listen(ob, put, getReferences) {
     console.log('to: ' + ob.gcm_obj_tx.token);
 
     // TODO: this is made to work just like APN, even though sending individually is inefficient
-    sender.send(message, { registrationTokens: [ob.gcm_obj_tx.token] }, function(err, response) {
+    // #37 if apn options specified in message, use those
+    var connection = sender;
+    if (ob.gcm_obj_tx.options) {
+      console.log('USING DEV OPTIONS');
+      connection = new gcm.Sender(ob.gcm_obj_tx.options.key);
+    }
+    connection.send(message, { registrationTokens: [ob.gcm_obj_tx.token] }, function(err, response) {
       if (err) {
         console.error(err);
       } else {

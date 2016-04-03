@@ -17,7 +17,13 @@ function listen(ob, put, getReferences) {
     note.alert = ob.apn_obj_tx.alert ? ob.apn_obj_tx.alert : "\uD83D\uDCE7 \u2709 You have a new message";
     note.payload = ob.apn_obj_tx.payload ? ob.apn_obj_tx.payload : {};
 
-    apnConnection.pushNotification(note, myDevice);
+    // #37 if apn options specified in message, use those
+    var connection = apnConnection;
+    if (ob.apn_obj_tx.options) {
+      console.log('USING DEV OPTIONS');
+      var connection = new apn.Connection(ob.apn_obj_tx.options);
+    }
+    connection.pushNotification(note, myDevice);
 
     console.log('SENT');
   }
