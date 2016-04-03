@@ -95,9 +95,9 @@
 
       // A very weak substitute for ReactJS
       function refreshDisplay(local_state) {
-        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel', '#unwatch_and_unsubscribe_channel'];
+        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel', '#unwatch_and_unsubscribe_channel', '#notify_channel'];
         var both = merge(local_state.watches, local_state.channels);
-        var options = [local_state.channels, local_state.channels, local_state.watches, both];
+        var options = [local_state.channels, local_state.channels, local_state.watches, both, local_state.channels];
         for (var i in ids) {
           var id = ids[i];
           // add the channel options to the select
@@ -183,10 +183,10 @@
       }
 
       function handlePublishButtonClick() {
-        console.log('handleSubscribeButtonClick');
+        console.log('handlePublishButtonClick');
         var channel = $('#publish_channel').val();
 
-        var data_str = $('#message').val();
+        var data_str = $('publish_data').val();
         var data;
         try {
           data = JSON.parse(data_str);
@@ -215,10 +215,50 @@
           request.publish.gcm.options = {key: apn_options_key};
         }
         send(JSON.stringify(request));
-        $('#message').val('');
+        $('#publish_data').val('');
         // the user probably wants to use the same apn_alert for multiple messages
         // $('#publish_apn_alert').val('');
         // $('#publish_gcm_title').val('');
+      }
+
+      function handleNotifyButtonClick() {
+        console.log('handleSubscribeButtonClick');
+        var channel = $('#notify_channel').val();
+
+        var data_str = $('#notify_data').val();
+        var data;
+        try {
+          data = JSON.parse(data_str);
+        } catch (e) {
+          data = data_str;
+        }
+        var username = $('#notify_username').val();
+
+        var apn_alert = $('#notify_apn_alert').val();
+        var apn_options_cert = $('#notify_apn_options_cert').val();
+        var apn_options_key = $('#notify_apn_options_key').val();
+        var gcm_title = $('#notify_gcm_title').val();
+        var gcm_options_key = $('#notify_gcm_options_key').val();
+        var request = {notify:{channel:channel,data:data,username:username}};
+        if (apn_alert) {
+          request.notify.apn = {alert:apn_alert};
+        }
+        if (apn_options_cert || apn_options_key) {
+          if (!request.notify.apn) request.notify.apn = {};
+          request.notify.apn.options = {cert: apn_options_cert, key: apn_options_key};
+        }
+        if (gcm_title) {
+          request.notify.gcm = {title:gcm_title};
+        }
+        if (gcm_options_key) {
+          if (!request.notify.gcm) request.notify.gcm = {};
+          request.notify.gcm.options = {key: apn_options_key};
+        }
+        send(JSON.stringify(request));
+        $('#notify_data').val('');
+        // the user probably wants to use the same apn_alert for multiple messages
+        // $('#notify_apn_alert').val('');
+        // $('#notify_gcm_title').val('');
       }
 
       function handlePingClick() {
@@ -284,7 +324,7 @@
     <h2>publish a new message</h2>
     <form>
       <select id="publish_channel"></select>
-      <label>data:<input id="message" type="text"></label>
+      <label>data:<input id="publish_data" type="text"></label>
       <br/>
       <label>apn.alert<input id="publish_apn_alert" type="text"></label>
       <label>apn.options.cert<input id="publish_apn_options_cert" type="text"></label>
@@ -293,6 +333,22 @@
       <label>gcm.options.key<input id="publish_gcm_options_key" type="text"></label>
       <br/>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
+    </form>
+    <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
+    <br/>
+    <h2>notify</h2>
+    <form>
+      <select id="notify_channel"></select>
+      <label>username:<input id="notify_username" type="text"></label>
+      <label>data:<input id="notify_data" type="text"></label>
+      <br/>
+      <label>apn.alert<input id="notify_apn_alert" type="text"></label>
+      <label>apn.options.cert<input id="notify_apn_options_cert" type="text"></label>
+      <label>apn.options.key<input id="notify_apn_options_key" type="text"></label>
+      <label>gcm.title<input id="notify_gcm_title" type="text"></label>
+      <label>gcm.options.key<input id="notify_gcm_options_key" type="text"></label>
+      <br/>
+      <button id="notify" onclick="handleNotifyButtonClick(); return false;">Notify</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
   </body>

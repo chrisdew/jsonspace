@@ -12,7 +12,7 @@ function exec(ob, put, queries) {
     put({
       published:{
         channel:ob.websocket_obj_rx.data.publish.channel,
-        username:result.subscribed.username,
+        username:result.subscribed.username, // this is the username of the subscription doing the publishing
         data:publish.data,
         conn_id:ob.websocket_obj_rx.conn_id,
         apn:ob.websocket_obj_rx.data.publish.apn,
