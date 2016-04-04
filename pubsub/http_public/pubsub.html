@@ -198,6 +198,7 @@
         var apn_options_cert = $('#publish_apn_options_cert').val();
         var apn_options_key = $('#publish_apn_options_key').val();
         var gcm_title = $('#publish_gcm_title').val();
+        var gcm_click_action = $('#publish_gcm_click_action').val();
         var gcm_options_key = $('#publish_gcm_options_key').val();
         var request = {publish:{channel:channel,data:data}};
         if (apn_alert) {
@@ -209,6 +210,12 @@
         }
         if (gcm_title) {
           request.publish.gcm = {title:gcm_title};
+        }
+        if (gcm_click_action) {
+          if (!request.publish.gcm) {
+            request.publish.gcm = {};
+          }
+          request.publish.gcm.click_action = gcm_click_action;
         }
         if (gcm_options_key) {
           if (!request.publish.gcm) request.publish.gcm = {};
@@ -238,6 +245,7 @@
         var apn_options_cert = $('#notify_apn_options_cert').val();
         var apn_options_key = $('#notify_apn_options_key').val();
         var gcm_title = $('#notify_gcm_title').val();
+        var gcm_click_action = $('#notify_gcm_click_action').val();
         var gcm_options_key = $('#notify_gcm_options_key').val();
         var request = {notify:{channel:channel,data:data,username:username}};
         if (apn_alert) {
@@ -249,6 +257,12 @@
         }
         if (gcm_title) {
           request.notify.gcm = {title:gcm_title};
+        }
+        if (gcm_click_action) {
+          if (!request.notify.gcm) {
+            request.notify.gcm = {};
+          }
+          request.notify.gcm.click_action = gcm_click_action;
         }
         if (gcm_options_key) {
           if (!request.notify.gcm) request.notify.gcm = {};
@@ -330,6 +344,7 @@
       <label>apn.options.cert<input id="publish_apn_options_cert" type="text"></label>
       <label>apn.options.key<input id="publish_apn_options_key" type="text"></label>
       <label>gcm.title<input id="publish_gcm_title" type="text"></label>
+      <label>gcm.click_action<input id="publish_gcm_click_action" type="text"></label>
       <label>gcm.options.key<input id="publish_gcm_options_key" type="text"></label>
       <br/>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
@@ -346,6 +361,7 @@
       <label>apn.options.cert<input id="notify_apn_options_cert" type="text"></label>
       <label>apn.options.key<input id="notify_apn_options_key" type="text"></label>
       <label>gcm.title<input id="notify_gcm_title" type="text"></label>
+      <label>gcm.click_action<input id="notify_gcm_click_action" type="text"></label>
       <label>gcm.options.key<input id="notify_gcm_options_key" type="text"></label>
       <br/>
       <button id="notify" onclick="handleNotifyButtonClick(); return false;">Notify</button>

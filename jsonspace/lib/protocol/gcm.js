@@ -12,7 +12,7 @@ function listen(ob, put, getReferences) {
 
     var message = new gcm.Message({
       //collapseKey: 'demo',
-      //priority: 'high',
+      priority: 'high',
       //contentAvailable: true,
       //delayWhileIdle: true,
       //timeToLive: 3,
@@ -22,7 +22,8 @@ function listen(ob, put, getReferences) {
       notification: {
         title: ob.gcm_obj_tx.title ? ob.gcm_obj_tx.title : "title",
         icon: ob.gcm_obj_tx.icon ? ob.gcm_obj_tx.icon : "ic_launcher",
-        body: ob.gcm_obj_tx.body ? ob.gcm_obj_tx.body : "body"
+        body: ob.gcm_obj_tx.body ? ob.gcm_obj_tx.body : "body",
+        click_action: ob.gcm_obj_tx.click_action
       }
     });
 
