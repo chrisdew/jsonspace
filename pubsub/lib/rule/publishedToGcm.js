@@ -36,7 +36,7 @@ console.log('gcm3');
 console.log('gcm4');
 
   for (const token of deduped) {
-    if (!token.match(/^([0-9a-fA-F][0-9a-fA-F])+$/)) {
+    if (!token || typeof token !== 'string') {
       console.error('bad gcm token: ' + token);
       continue; // skip bad tokens
     }
