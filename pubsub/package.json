@@ -19,7 +19,7 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
-    "jsonspace": "^0.6.12",
+    "jsonspace": "^0.6.14",
     "maxmind": "^0.6.0",
     "mocha": "^2.3.4",
     "ws": "^0.8.1",
