@@ -38,6 +38,7 @@ const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().
   publish: require('./lib/rule/publish'),
   notify: require('./lib/rule/notify'),
   publishedToSubscribers: require('./lib/rule/publishedToSubscribers'),
+  notifiedToSubscribers: require('./lib/rule/notifiedToSubscribers'),
   rawToObj: require('./lib/rule/rawToObj'),
   requestedPublishedsToRequester: require('./lib/rule/requestedPublishedsToRequester'),
   requestedSubscribersToRequester: require('./lib/rule/requestedSubscribersToRequester'),

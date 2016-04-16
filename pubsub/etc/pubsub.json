@@ -21,6 +21,7 @@
   {"rule":{"type":"published","name":"publishedToSubscribers"}},
   {"rule":{"type":"published","name":"publishedToApn"}},
   {"rule":{"type":"published","name":"publishedToGcm"}},
+  {"rule":{"type":"notified","name":"notifiedToSubscribers"}},
   {"rule":{"type":"notified","name":"notifiedToApn"}},
   {"rule":{"type":"notified","name":"notifiedToGcm"}},
   {"rule":{"type":"unsubscribed","name":"unsubscribedToSubscribers"}},
