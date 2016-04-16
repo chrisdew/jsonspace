@@ -9,6 +9,7 @@ function exec(ob, put, queries, isRemote) {
   const redacted = u.klone(ob);
   delete redacted.subscribed.conn_id; // don't leak connection data
   delete redacted.subscribed.server; // don't leak connection data
+  delete redacted.subscribed.uod_delay; // don't leak
   delete redacted.subscribed.apn; // don't leak apple push data
   delete redacted.subscribed.gcm; // don't leak google push data
 

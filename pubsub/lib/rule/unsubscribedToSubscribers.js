@@ -9,6 +9,9 @@ function exec(ob, put, queries, isRemote) {
   const redacted = u.klone(ob);
   delete redacted.unsubscribed.conn_id; // don't leak connection data
   delete redacted.unsubscribed.server; // don't leak connection data
+  delete redacted.unsubscribed.uod_delay; // don't leak
+  delete redacted.unsubscribed.apn; // don't leak apple push data
+  delete redacted.unsubscribed.gcm; // don't leak google push data
 
   // if this is not the first subscription for the username/channel combo, don't bother to inform
   // other subscribers/watchers

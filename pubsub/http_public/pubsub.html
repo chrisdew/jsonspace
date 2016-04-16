@@ -133,12 +133,20 @@
         }
 
         var published_since = $('#subscribe_published_since').val();
+        var uod_delay_str = $('#subscribe_uod_delay').val();
+        var uod_delay;
+        try {
+          uod_delay = parseInt(uod_delay_str, 10);
+        } catch (e) { // not a number
+        }
+
         var apn_token = $('#subscribe_apn_token').val();
         var gcm_token = $('#subscribe_gcm_token').val();
         var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
         if (published_since) request.subscribe.published_since = published_since;
         if (apn_token) request.subscribe.apn = {token:apn_token};
         if (gcm_token) request.subscribe.gcm = {token:gcm_token};
+        if (uod_delay) request.subscribe.uod_delay = uod_delay;
         send(JSON.stringify(request));
         $('#subscribe_channel').val('');
         $('#subscribe_extra').val('');
@@ -301,6 +309,7 @@
       <label>channel:<input id="subscribe_channel" type="text"></label>
       <label>extra: <input id="subscribe_extra" type="text"></label>
       <label>published_since (optional): <input id="subscribe_published_since" type="text"></label>
+      <label>uod_delay: <input id="subscribe_uod_delay" type="text"></label>
       <br>
       <label>apn token (optional): <input id="subscribe_apn_token" type="text"></label>
       <label>gcm token (optional): <input id="subscribe_gcm_token" type="text"></label>

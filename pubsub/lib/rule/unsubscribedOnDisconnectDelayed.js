@@ -8,9 +8,13 @@ function exec(ob, put, queries) {
   const results = queries.subscribed$conn_id.results(ob.websocket_disconnected.conn_id);
 
   for (const result of results) {
-    setTimeout(function() {
+    if (result.subscribed.uod_delay) {
+      setTimeout(function () {
+        put({unsubscribed: result.subscribed});
+      }, result.subscribed.uod_delay);
+    } else {
       put({unsubscribed: result.subscribed});
-    }, DELAY);
+    }
   }
 }
 
