@@ -95,9 +95,9 @@
 
       // A very weak substitute for ReactJS
       function refreshDisplay(local_state) {
-        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel', '#unwatch_and_unsubscribe_channel', '#notify_channel'];
+        var ids = ['#publish_channel', '#unsubscribe_channel', '#unwatch_channel', '#unwatch_and_unsubscribe_channel', '#notify_channel', '#unsubscribe_me_channel'];
         var both = merge(local_state.watches, local_state.channels);
-        var options = [local_state.channels, local_state.channels, local_state.watches, both, local_state.channels];
+        var options = [local_state.channels, local_state.channels, local_state.watches, both, local_state.channels, local_state.channels];
         for (var i in ids) {
           var id = ids[i];
           // add the channel options to the select
@@ -161,6 +161,14 @@
         console.log('handleUnsubscribeButtonClick');
         var channel = $('#unsubscribe_channel').val();
         send(JSON.stringify({unsubscribe:{username:local_state.username,channel:channel}}));
+        removeFromChannels(channel);
+        removeFromWatched(channel);
+      }
+
+      function handleUnsubscribeMeButtonClick() {
+        console.log('handleUnsubscribeMeButtonClick');
+        var channel = $('#unsubscribe_me_channel').val();
+        send(JSON.stringify({unsubscribe_me:{username:local_state.username,channel:channel}}));
         removeFromChannels(channel);
         removeFromWatched(channel);
       }
@@ -321,6 +329,13 @@
     <form>
       <select id="unsubscribe_channel"></select>
       <button id="unsubscribe" onclick="handleUnsubscribeButtonClick(); return false;">Unsubscribe</button>
+    </form>
+    <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
+    <br/>
+    <h2>unsubscribe_me from a channel (for all devices)</h2>
+    <form>
+      <select id="unsubscribe_me_channel"></select>
+      <button id="unsubscribe_me" onclick="handleUnsubscribeMeButtonClick(); return false;">UnsubscribeMe</button>
     </form>
     <p>(if the select box has no options, you have not yet subscribed to any channels, since the server was started)</p>
     <br/>
