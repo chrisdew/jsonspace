@@ -7,7 +7,8 @@ function exec(ob, put, queries) {
   if (!ob.dns_request || !ob.dns_request.request_id) return;
 
   if (ob.dns_request.question[0].name !== 'pubsub.jsonspace.com'
-   && ob.dns_request.question[0].name !== 'pubsub.tourney.com') return; // temporary fix for server being abused in a dns amplification attack
+    && ob.dns_request.question[0].name !== 'pubsub.tourney.jsonspace.com'
+    && ob.dns_request.question[0].name !== 'pubsub.tourney.com') return; // temporary fix for server being abused in a dns amplification attack
 
   const all = queries.heartbeat$host.all();
 

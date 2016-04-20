@@ -3,7 +3,29 @@ server {
   listen 0.0.0.0:80;
   server_name pubsub.tourney.jsonspace.com;
   ## redirect http to https ##
-  rewrite ^ https://$server_name$request_uri? permanent;
+  #rewrite ^ https://$server_name$request_uri? permanent;
+
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-Proto $scheme;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_read_timeout 86400s;
+
+  # no security problem here, since / is alway passed to upstream
+  root /tmp;
+  location / {
+    proxy_pass http://localhost:8888;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+
+    proxy_set_header Host $http_host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Scheme $scheme;
+  }
+  # what to serve if upstream is not available or crashes
+  error_page 500 502 503 504 /media/50x.html;
 }
 
 server {
@@ -30,7 +52,7 @@ server {
   # no security problem here, since / is alway passed to upstream
   root /tmp;
   location / {
-    proxy_pass http://localhost:8080;
+    proxy_pass http://localhost:8888;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";

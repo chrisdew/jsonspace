@@ -9,7 +9,14 @@
         $('<li>' + message + '</li>').appendTo('#messages');
       };
 
-      var ws_url = 'ws://' + location.host.split(':')[0] + ':8888/pubsub';
+      //var ws_url = 'ws://' + location.host.split(':')[0] + ':8888/pubsub';
+      //var ws_url = 'wss://' + location.host.split(':')[0] + '/pubsub';
+      var ws_url;
+      if (location.host.split(':')[0] === 'pubsub.tourney.jsonspace.com') {
+        var ws_url = 'wss://' + location.host.split(':')[0] + '/pubsub';
+      } else {
+        var ws_url = 'ws://' + location.host.split(':')[0] + ':8888/pubsub';
+      }
       console.log('ws_url', ws_url);
       var sock = false;
 

@@ -21,3 +21,9 @@ rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" 
 rsync -avz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" --progress ../../../jsonspace $USER@$MACHINE:/srv/node_modules/
 ssh $USER@$MACHINE "cd /srv/node_modules ; rm -f pubsub/node_modules/jsonspace ; start pubsub"
 
+ssh $USER@$MACHINE rm -f /etc/nginx/sites-enabled/pubsub.jsonspace.com
+ssh $USER@$MACHINE rm -f /etc/nginx/sites-available/pubsub.jsonspace.com
+scp -rp nginx/sites-available $USER@$MACHINE:/etc/nginx/
+ssh $USER@$MACHINE rm -f /etc/nginx/sites-enabled/pubsub.tourney.jsonspace.com
+ssh $USER@$MACHINE ln -s /etc/nginx/sites-available/pubsub.tourney.jsonspace.com /etc/nginx/sites-enabled/
+scp -rp nginx/srv/pubsub.tourney.jsonspace.com.* $USER@$MACHINE:/srv/

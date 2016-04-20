@@ -24,8 +24,8 @@ ssh $USER@$MACHINE node -v
 # install nginx
 ssh $USER@$MACHINE apt-get -y install nginx
 scp -rp nginx/sites-available $USER@$MACHINE:/etc/nginx/
-ssh $USER@$MACHINE rm -f /etc/nginx/sites-enabled/pubsub.jsonspace.com
-ssh $USER@$MACHINE ln -s /etc/nginx/sites-available/pubsub.jsonspace.com /etc/nginx/sites-enabled/
+ssh $USER@$MACHINE rm -f /etc/nginx/sites-enabled/pubsub.tourney.jsonspace.com
+ssh $USER@$MACHINE ln -s /etc/nginx/sites-available/pubsub.tourney.jsonspace.com /etc/nginx/sites-enabled/
 ssh $USER@$MACHINE mkdir -p /var/www
 scp -rp www/pubsub.jsonspace.com $USER@$MACHINE:/var/www/
 ssh $USER@$MACHINE /etc/init.d/nginx stop
