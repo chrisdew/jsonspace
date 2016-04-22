@@ -23,6 +23,9 @@ function listen(ob, put, getReferences) {
         title: ob.gcm_obj_tx.title ? ob.gcm_obj_tx.title : "title",
         icon: ob.gcm_obj_tx.icon ? ob.gcm_obj_tx.icon : "ic_launcher",
         body: ob.gcm_obj_tx.body ? ob.gcm_obj_tx.body : "body",
+        sound: ob.gcm_obj_tx.sound,
+        tag: ob.gcm_obj_tx.tag,
+        color: ob.gcm_obj_tx.color,
         click_action: ob.gcm_obj_tx.click_action
       }
     });
