@@ -1,6 +1,6 @@
 {
   "name": "pubsub_jsonspace",
-  "version": "0.18.12",
+  "version": "0.18.14",
   "description": "websocket pub/sub server (unstable)",
   "main": "index.js",
   "scripts": {

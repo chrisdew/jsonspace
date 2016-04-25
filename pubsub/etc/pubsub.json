@@ -1,6 +1,6 @@
 [
   {"protocol":{"replicate":{"listen":{"port":8008,"host":"0.0.0.0"},"types":["published","subscribed","unsubscribed","updated_extra","ping"]}}},
-  {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"},"timeout":30000}}},
+  {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"},"timeout":120000}}},
   {"protocol":{"http":{"listen":{"port":8080}}}},
   {"protocol":{"dns":{"listen":{"port":8053}}}},
   {"protocol":{"apn":{"listen":{"options":{"cert":"./etc/apn_cert.pem","key":"./etc/apn_key.pem"}}}}},
@@ -28,6 +28,7 @@
   {"rule":{"type":"unsubscribed","name":"unsubscribedToSubscribers"}},
   {"rule":{"type":"websocket_disconnected","name":"unsubscribedOnDisconnect"}},
   {"rule":{"type":"websocket_disconnected","name":"unwatchedOnDisconnect"}},
+  {"rule":{"type":"websocket_timeout","name":"unsubscribedOnWebsocketTimeout"}},
   {"rule":{"type":"http_request","name":"httpDebug"}},
   {"rule":{"type":"http_request","name":"httpStatic"}},
   {"rule":{"type":"dns_request","name":"dnsResponse"}},
