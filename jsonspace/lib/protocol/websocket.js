@@ -33,6 +33,9 @@ function listen(ob, put) {
     });
 
     ws.on('close', () => {
+      if (ob.protocol.websocket.timeout) {
+        clearTimeout(timeout);
+      }
       put({websocket_disconnected:{conn_id:conn_id}});
     });
 
