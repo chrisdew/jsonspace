@@ -15,7 +15,7 @@ function listen(ob, put, getReferences) {
       priority: 'high',
       //contentAvailable: true,
       //delayWhileIdle: true,
-      //timeToLive: 3,
+      timeToLive: ob.gcm_obj_tx.time_to_live,
       //restrictedPackageName: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : null,
       //dryRun: true,
       //data: ob.gcm_obj_tx.payload ? ob.gcm_obj_tx.payload : {},

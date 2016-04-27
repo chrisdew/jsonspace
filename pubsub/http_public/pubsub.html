@@ -208,24 +208,27 @@
       function handlePublishButtonClick() {
         console.log('handlePublishButtonClick');
         var channel = $('#publish_channel').val();
-
-        var data_str = $('#publish_data').val();
-        var data;
-        try {
-          data = JSON.parse(data_str);
-        } catch (e) {
-          data = data_str;
-        }
-
+        var data = parseField('#publish_data');
         var apn_alert = $('#publish_apn_alert').val();
+        var apn_expiry = parseField('#publish_apn_expiry');
+        var apn_badge = parseField('#publish_apn_badge');
         var apn_options_cert = $('#publish_apn_options_cert').val();
         var apn_options_key = $('#publish_apn_options_key').val();
         var gcm_title = $('#publish_gcm_title').val();
         var gcm_click_action = $('#publish_gcm_click_action').val();
+        var gcm_time_to_live = parseField('#publish_gcm_time_to_live');
         var gcm_options_key = $('#publish_gcm_options_key').val();
         var request = {publish:{channel:channel,data:data}};
         if (apn_alert) {
           request.publish.apn = {alert:apn_alert};
+        }
+        if (apn_expiry) {
+          if (!request.publish.apn) request.publish.apn = {};
+          request.publish.apn.expiry = apn_expiry;
+        }
+        if (apn_badge) {
+          if (!request.publish.apn) request.publish.apn = {};
+          request.publish.apn.badge = apn_badge;
         }
         if (apn_options_cert || apn_options_key) {
           if (!request.publish.apn) request.publish.apn = {};
@@ -240,6 +243,10 @@
           }
           request.publish.gcm.click_action = gcm_click_action;
         }
+        if (gcm_time_to_live) {
+          if (!request.publish.gcm) request.publish.gcm = {};
+          request.publish.gcm.time_to_live = gcm_time_to_live;
+        }
         if (gcm_options_key) {
           if (!request.publish.gcm) request.publish.gcm = {};
           request.publish.gcm.options = {key: apn_options_key};
@@ -251,28 +258,43 @@
         // $('#publish_gcm_title').val('');
       }
 
+      function parseField(name) {
+        var str = $(name).val();
+        if (str && str.length > 0) {
+          try {
+            return JSON.parse(str);
+          } catch (e) {
+            return str;
+          }
+        }
+        // returns undefined
+      }
+
       function handleNotifyButtonClick() {
         console.log('handleSubscribeButtonClick');
         var channel = $('#notify_channel').val();
-
-        var data_str = $('#notify_data').val();
-        var data;
-        try {
-          data = JSON.parse(data_str);
-        } catch (e) {
-          data = data_str;
-        }
+        var data = parseField('#notify_data');
         var username = $('#notify_username').val();
-
         var apn_alert = $('#notify_apn_alert').val();
+        var apn_expiry = parseField('#notify_apn_expiry');
+        var apn_badge = parseField('#notify_apn_badge');
         var apn_options_cert = $('#notify_apn_options_cert').val();
         var apn_options_key = $('#notify_apn_options_key').val();
         var gcm_title = $('#notify_gcm_title').val();
         var gcm_click_action = $('#notify_gcm_click_action').val();
+        var gcm_time_to_live = parseField('#notify_gcm_time_to_live');
         var gcm_options_key = $('#notify_gcm_options_key').val();
         var request = {notify:{channel:channel,data:data,username:username}};
         if (apn_alert) {
           request.notify.apn = {alert:apn_alert};
+        }
+        if (apn_expiry) {
+          if (!request.notify.apn) request.notify.apn = {};
+          request.notify.apn.expiry = apn_expiry;
+        }
+        if (apn_badge) {
+          if (!request.notify.apn) request.notify.apn = {};
+          request.notify.apn.badge = apn_badge;
         }
         if (apn_options_cert || apn_options_key) {
           if (!request.notify.apn) request.notify.apn = {};
@@ -286,6 +308,10 @@
             request.notify.gcm = {};
           }
           request.notify.gcm.click_action = gcm_click_action;
+        }
+        if (gcm_time_to_live) {
+          if (!request.notify.gcm) request.notify.gcm = {};
+          request.notify.gcm.time_to_live = gcm_time_to_live;
         }
         if (gcm_options_key) {
           if (!request.notify.gcm) request.notify.gcm = {};
@@ -372,10 +398,14 @@
       <label>data:<input id="publish_data" type="text"></label>
       <br/>
       <label>apn.alert<input id="publish_apn_alert" type="text"></label>
+      <label>apn.expiry<input id="publish_apn_expiry" type="text"></label>
+      <label>apn.badge<input id="publish_apn_badge" type="text"></label>
       <label>apn.options.cert<input id="publish_apn_options_cert" type="text"></label>
       <label>apn.options.key<input id="publish_apn_options_key" type="text"></label>
+      <br/>
       <label>gcm.title<input id="publish_gcm_title" type="text"></label>
       <label>gcm.click_action<input id="publish_gcm_click_action" type="text"></label>
+      <label>gcm.time_to_live<input id="publish_gcm_time_to_live" type="text"></label>
       <label>gcm.options.key<input id="publish_gcm_options_key" type="text"></label>
       <br/>
       <button id="publish" onclick="handlePublishButtonClick(); return false;">Publish</button>
@@ -389,10 +419,14 @@
       <label>data:<input id="notify_data" type="text"></label>
       <br/>
       <label>apn.alert<input id="notify_apn_alert" type="text"></label>
+      <label>apn.expiry<input id="notify_apn_expiry" type="text"></label>
+      <label>apn.badge<input id="notify_apn_badge" type="text"></label>
       <label>apn.options.cert<input id="notify_apn_options_cert" type="text"></label>
       <label>apn.options.key<input id="notify_apn_options_key" type="text"></label>
+      <br/>
       <label>gcm.title<input id="notify_gcm_title" type="text"></label>
       <label>gcm.click_action<input id="notify_gcm_click_action" type="text"></label>
+      <label>gcm.time_to_live<input id="notify_gcm_time_to_live" type="text"></label>
       <label>gcm.options.key<input id="notify_gcm_options_key" type="text"></label>
       <br/>
       <button id="notify" onclick="handleNotifyButtonClick(); return false;">Notify</button>
