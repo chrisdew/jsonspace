@@ -40,6 +40,12 @@ const blackboard = new jsonspace.Blackboard(getAddresses()[0], () => new Date().
   publishedToSubscribers: require('./lib/rule/publishedToSubscribers'),
   notifiedToSubscribers: require('./lib/rule/notifiedToSubscribers'),
   rawToObj: require('./lib/rule/rawToObj'),
+  replicateConnectedToEmail: require('./lib/rule/replicateConnectedToEmail'),
+  replicateDisconnectedToEmail: require('./lib/rule/replicateDisconnectedToEmail'),
+  replicateErrorToEmail: require('./lib/rule/replicateErrorToEmail'),
+  replicationClientConnectedToEmail: require('./lib/rule/replicationClientConnectedToEmail'),
+  replicationClientDisconnectedToEmail: require('./lib/rule/replicationClientDisconnectedToEmail'),
+  replicationClientErrorToEmail: require('./lib/rule/replicationClientErrorToEmail'),
   requestedPublishedsToRequester: require('./lib/rule/requestedPublishedsToRequester'),
   requestedSubscribersToRequester: require('./lib/rule/requestedSubscribersToRequester'),
   subscribe: require('./lib/rule/subscribe'),
@@ -75,6 +81,7 @@ for (const filename of filenames) {
       try {
         blackboard.put(message);
       } catch (e) {
+        console.log('e', e);
         blackboard.put({config_error:{ref:message,err:e}});
       }
     }

@@ -5,6 +5,7 @@
   {"protocol":{"dns":{"listen":{"port":8053}}}},
   {"protocol":{"apn":{"listen":{"options":{"cert":"./etc/apn_cert.pem","key":"./etc/apn_key.pem"}}}}},
   {"protocol":{"gcm":{"listen":{"options":{"key":"GCM key goes here"}}}}},
+  {"protocol":{"email":{"listen":{"transport":{"direct":true,"name":"dallas-tourney.jsonspace.com"},"email":{"from":"Dallas Pubsub Server <pubsub@dallas-tourney.jsonspace.com>","to":["chris.dew@barricane.com"]}}}}},
   {"rule":{"type":"websocket_raw_rx","name":"rawToObj"}},
   {"rule":{"type":"websocket_obj_rx","name":"subscribe"}},
   {"rule":{"type":"websocket_obj_rx","name":"publish"}},
@@ -50,5 +51,6 @@
   {"http_static_content":{"path":"/pubsub/user_b","file":"pubsub.html"}},
   {"http_static_content":{"path":"/pubsub/user_c","file":"pubsub.html"}},
   {"heartbeat":{"interval":2000}},
+  {"email_obj_tx":{"subject":"Server Started","text":"Server started.","html":"Server started."}},
   {}
 ]

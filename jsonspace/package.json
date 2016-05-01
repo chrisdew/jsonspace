@@ -1,6 +1,6 @@
 {
   "name": "jsonspace",
-  "version": "0.6.20",
+  "version": "0.6.22",
   "description": "jsonspace framework (unstable)",
   "main": "jsonspace.js",
   "scripts": {
@@ -23,6 +23,7 @@
     "byline": "^4.2.1",
     "native-dns": "^0.7.0",
     "node-gcm": "^0.14.0",
+    "nodemailer": "^2.3.2",
     "ws": "^0.8.1"
   },
   "devDependencies": {

@@ -4,6 +4,10 @@ const net = require('net');
 const byline = require('byline');
 const u = require('../util');
 
+const INITIAL_RECONN_DELAY = 10000; // ten seconds
+const MAX_RECONN_DELAY =    600000; // ten minutes
+//const MAX_RECONN_DELAY =     30000; // thirty seconds
+
 function listen(ob, put, getReferences) {
 }
 
@@ -12,11 +16,14 @@ function start(ob, put, pool) {
   const conn_id = `replication_client|${connect.host}:${connect.port}`;
   let conn = null;
 
+  let reconn_delay = INITIAL_RECONN_DELAY;
+
   function try_to_connect() {
     put({replication_client_connecting: {conn_id: conn_id}});
     conn = net.connect(connect.port, connect.host, function () {
       conn.setEncoding('utf8');
       put({replication_client_connected: {conn_id: conn_id}});
+      reconn_delay = INITIAL_RECONN_DELAY;
       const lines = byline(conn);
       lines.on('data', function (data) {
         let rep = JSON.parse(data);
@@ -35,14 +42,18 @@ function start(ob, put, pool) {
       });
     });
     conn.on('error', function (err) {
-      put({replication_client_error: {conn_id: conn_id, error: err}});
+      put({replication_client_error: {conn_id: conn_id, error: err, max_reconn_delay: reconn_delay === MAX_RECONN_DELAY}});
       conn = null;
-      setTimeout(try_to_connect, 5000);
+      setTimeout(try_to_connect, reconn_delay);
+      reconn_delay *= 2;
+      reconn_delay = Math.min(MAX_RECONN_DELAY, reconn_delay);
     });
     conn.on('end', function () {
       put({replication_client_disconnected: {conn_id: conn_id}});
       conn = null;
-      setTimeout(try_to_connect, 5000);
+      setTimeout(try_to_connect, reconn_delay);
+      reconn_delay *= 2;
+      reconn_delay = Math.min(MAX_RECONN_DELAY, reconn_delay);
     });
   }
 

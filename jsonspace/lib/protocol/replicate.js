@@ -24,6 +24,16 @@ function listen(ob, put, getReferences) {
       connection.write(JSON.stringify(refs[i]) + '\n');
     }
 
+    connection.on('error', (error) => {
+      put({replicate_error:{
+        conn_id:conn_id,
+        tcp_conn:tcp_conn,
+        server:client_addr,
+        error:error
+      }});
+      connection.end();
+    });
+
     connection.on('close', () => {
       put({replicate_disconnected:{
         conn_id:conn_id,

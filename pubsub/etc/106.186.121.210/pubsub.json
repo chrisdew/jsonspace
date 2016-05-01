@@ -42,5 +42,6 @@
   {"http_static_content":{"path":"/pubsub/user_b","file":"pubsub.html"}},
   {"http_static_content":{"path":"/pubsub/user_c","file":"pubsub.html"}},
   {"heartbeat":{"interval":2000}},
+  {"email_obj_tx":{"subject":"Server Started","text":"Server started.","html":"Server started."}}
   {}
 ]
