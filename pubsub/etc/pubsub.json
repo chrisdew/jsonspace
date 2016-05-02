@@ -1,5 +1,5 @@
 [
-  {"protocol":{"replicate":{"listen":{"port":8008,"host":"0.0.0.0"},"types":["published","subscribed","unsubscribed","updated_extra","ping"]}}},
+  {"protocol":{"replicate":{"listen":{"port":8008,"host":"0.0.0.0"},"types":["published","notified","subscribed","unsubscribed","updated_extra","ping"]}}},
   {"protocol":{"websocket":{"listen":{"port":8888,"path":"/pubsub"},"timeout":120000}}},
   {"protocol":{"http":{"listen":{"port":8080}}}},
   {"protocol":{"dns":{"listen":{"port":8053}}}},
