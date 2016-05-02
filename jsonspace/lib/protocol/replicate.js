@@ -31,6 +31,11 @@ function listen(ob, put, getReferences) {
         server:client_addr,
         error:error
       }});
+      put({replicate_disconnected:{
+        conn_id:conn_id,
+        tcp_conn:tcp_conn,
+        server:client_addr
+      }});
       connection.end();
     });
 

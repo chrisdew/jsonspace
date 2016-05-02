@@ -1,0 +1,43 @@
+#!/bin/bash
+
+IPTABLES=/sbin/iptables
+
+ADMIN_NET_0=81.187.221.80/28
+
+TOKYO=106.186.121.210
+DALLAS=45.79.6.86
+
+SSH_PORT=22
+HTTP_PORT=80
+HTTPS_PORT=443
+REPLICATION_PORT=8008
+DEMO_PORT=8888
+WEBSOCKET_PORT=8888
+DNS_PORT=53
+
+
+$IPTABLES -F INPUT
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPTABLES -A INPUT -i lo -j ACCEPT
+$IPTABLES -A INPUT -p icmp -j ACCEPT
+$IPTABLES -A INPUT -s $ADMIN_NET_0 -j ACCEPT
+$IPTABLES -A INPUT -p tcp -m multiport --destination-ports $SSH_PORT,$HTTP_PORT,$HTTPS_PORT,$DEMO_PORT,$WEBSOCKET_PORT -j ACCEPT
+$IPTABLES -A INPUT -p udp -m multiport --destination-ports $DNS_PORT -j ACCEPT
+$IPTABLES -A INPUT -s $TOKYO -p tcp --destination-port 8008 -j ACCEPT
+$IPTABLES -A INPUT -s $DALLAS -p tcp --destination-port 8008 -j ACCEPT
+
+# limit connections to 256 per IP
+$IPTABLES -A INPUT -p tcp --syn --dport $HTTP_PORT -m connlimit --connlimit-above 256 -j REJECT --reject-with tcp-reset
+$IPTABLES -A INPUT -p tcp --syn --dport $HTTPS_PORT -m connlimit --connlimit-above 256 -j REJECT --reject-with tcp-reset
+
+# limit connection attempt rate to 16 per minute
+$IPTABLES -A INPUT -p tcp --dport $HTTP_PORT -i eth0 -m state --state NEW -m recent --set
+$IPTABLES -A INPUT -p tcp --dport $HTTPS_PORT -i eth0 -m state --state NEW -m recent --set
+$IPTABLES -A INPUT -p tcp --dport $HTTP_PORT -i eth0 -m state --state NEW -m recent --update --seconds 60 --hitcount 16 -j DROP
+$IPTABLES -A INPUT -p tcp --dport $HTTPS_PORT -i eth0 -m state --state NEW -m recent --update --seconds 60 --hitcount 16 -j DROP
+
+$IPTABLES -P INPUT DROP
+$IPTABLES -P FORWARD DROP
+
+
+

@@ -18,6 +18,17 @@ function listen(ob, put) {
     }});
   });
 
+  server.on('error', function (error, buf, request, response) {
+    const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
+    responses[request_id] = response;
+    put({dns_error:{
+      request_id: request_id,
+      question: request.question,
+      from: request.address.address,
+      error: err.stack
+    }});
+  });
+
   // this function is given back to the blackboard to handle outgoing dns data
   function send(ob, put) {
     const response = responses[ob.dns_response.request_id];
@@ -30,7 +41,7 @@ function listen(ob, put) {
       }
       response.send();
     } else {
-      put({error:{message:'unable to send due to non-existent request_id'}, ref:ob});
+      put({dns_error:{message:'unable to send due to non-existent request_id'}, ref:ob});
     }
   }
 
