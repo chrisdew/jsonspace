@@ -34,7 +34,8 @@ pubsub_jsonspace@0.18.22 node_modules/pubsub_jsonspace
 
 run
 ===
-```94:tmp chris$ cd node_modules/pubsub_jsonspace/
+```
+   94:tmp chris$ cd node_modules/pubsub_jsonspace/
    94:pubsub_jsonspace chris$ mkdir ./geoip
    94:pubsub_jsonspace chris$ cp /where/you/keep/it/GeoLiteCity.dat ./geoip/
    94:pubsub_jsonspace chris$ npm start
