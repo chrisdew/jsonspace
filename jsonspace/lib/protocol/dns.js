@@ -9,24 +9,39 @@ function listen(ob, put) {
   server.serve(ob.protocol.dns.listen.port, ob.protocol.dns.listen.address);
 
   server.on('request', (request, response) => {
-    const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
-    responses[request_id] = response;
-    put({dns_request:{
-      request_id: request_id,
-      question: request.question,
-      from: request.address.address
-    }});
+    if (!request.address | !request.address.address | !request.address.port) {
+      put({dns_malformed_request:{
+        request:request
+      }});
+    } else {
+      const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
+      responses[request_id] = response;
+      put({dns_request:{
+        request_id: request_id,
+        question: request.question,
+        from: request.address.address
+      }});
+    }
   });
 
   server.on('error', function (error, buf, request, response) {
-    const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
-    responses[request_id] = response;
-    put({dns_error:{
-      request_id: request_id,
-      question: request.question,
-      from: request.address.address,
-      error: err.stack
-    }});
+    if (!request.address | !request.address.address | !request.address.port) {
+      put({dns_malformed_request_error:{
+        request:request,
+        error: err.stack
+      }});
+    } else {
+      const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
+      responses[request_id] = response;
+      put({
+        dns_error: {
+          request_id: request_id,
+          question: request.question,
+          from: request.address.address,
+          error: err.stack
+        }
+      });
+    }
   });
 
   // this function is given back to the blackboard to handle outgoing dns data
