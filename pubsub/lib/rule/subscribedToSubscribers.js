@@ -41,7 +41,7 @@ function exec(ob, put, queries, isRemote) {
     if (result.subscribed.conn_id === ob.subscribed.conn_id) continue;
 
     // if this subscription is hiding from a user, don't tell that user
-    if (ob.subscribed.hidefrom && ob.subscribe.hidefrom.indexOf(result.subscribed.username) !== -1) continue;
+    if (ob.subscribed.hidefrom && ob.subscribed.hidefrom.indexOf(result.subscribed.username) !== -1) continue;
 
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
