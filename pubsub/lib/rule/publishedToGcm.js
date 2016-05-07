@@ -30,6 +30,7 @@ console.log('gcm3');
   for (const result of results) {
     if (result.subscribed.conn_id === ob.published.conn_id) continue; // don't echo via gcm
     if (!result.subscribed.gcm) continue;
+    if (ob.published.hidefrom && ob.published.hidefrom.indexOf(result.subscribed.username) !== -1) continue;
     tokens.push(result.subscribed.gcm.token);
   }
   const deduped = u.dedupArrayOfStrings(tokens);

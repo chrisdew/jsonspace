@@ -29,6 +29,7 @@ console.log('apn3');
   for (const result of results) {
     if (result.subscribed.conn_id === ob.published.conn_id) continue; // don't echo via apn
     if (!result.subscribed.apn) continue;
+    if (ob.published.hidefrom && ob.published.hidefrom.indexOf(result.subscribed.username) !== -1) continue;
     tokens.push(result.subscribed.apn.token);
   }
   const deduped = u.dedupArrayOfStrings(tokens);

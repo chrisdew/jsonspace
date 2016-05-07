@@ -139,6 +139,7 @@
           extra = extra_str;
         }
 
+        var hidefrom_str = $('#subscribe_hidefrom').val();
         var published_since = $('#subscribe_published_since').val();
         var uod_delay_str = $('#subscribe_uod_delay').val();
         var uod_delay;
@@ -150,6 +151,9 @@
         var apn_token = $('#subscribe_apn_token').val();
         var gcm_token = $('#subscribe_gcm_token').val();
         var request = {subscribe:{username:local_state.username,channel:channel,extra:extra}};
+        if (hidefrom_str != null && hidefrom_str.length > 0) {
+          request.subscribe.hidefrom = hidefrom_str.split(',');
+        }
         if (published_since) request.subscribe.published_since = published_since;
         if (apn_token) request.subscribe.apn = {token:apn_token};
         if (gcm_token) request.subscribe.gcm = {token:gcm_token};
@@ -349,6 +353,7 @@
     <form>
       <label>channel:<input id="subscribe_channel" type="text"></label>
       <label>extra: <input id="subscribe_extra" type="text"></label>
+      <label>hidefrom: <input id="subscribe_hidefrom" type="text" placeholder="alice,bob"></label>
       <label>published_since (optional): <input id="subscribe_published_since" type="text"></label>
       <label>uod_delay: <input id="subscribe_uod_delay" type="text"></label>
       <br>

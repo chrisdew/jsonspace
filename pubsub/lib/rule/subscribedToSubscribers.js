@@ -12,6 +12,7 @@ function exec(ob, put, queries, isRemote) {
   delete redacted.subscribed.uod_delay; // don't leak
   delete redacted.subscribed.apn; // don't leak apple push data
   delete redacted.subscribed.gcm; // don't leak google push data
+  delete redacted.subscribed.hidefrom;
 
   // if this is not the first subscription for the username/channel combo, don't bother to inform
   // other subscribers/watchers
@@ -38,6 +39,10 @@ function exec(ob, put, queries, isRemote) {
   for (const result of results) {
     if (isRemote(result)) continue;
     if (result.subscribed.conn_id === ob.subscribed.conn_id) continue;
+
+    // if this subscription is hiding from a user, don't tell that user
+    if (ob.subscribed.hidefrom && ob.subscribe.hidefrom.indexOf(result.subscribed.username) !== -1) continue;
+
     put({websocket_obj_tx:{conn_id:result.subscribed.conn_id,obj:redacted}});
   }
 
@@ -49,6 +54,10 @@ function exec(ob, put, queries, isRemote) {
   for (const watchResult of watchResults) {
     if (isRemote(watchResult)) continue;
     if (watchResult.watched.conn_id === ob.subscribed.conn_id) continue;
+
+    // if this subscription is hiding from a user, don't tell that user
+    if (ob.subscribed.hidefrom && ob.subscribe.hidefrom.indexOf(watchResult.subscribed.username) !== -1) continue;
+
     put({websocket_obj_tx:{conn_id:watchResult.watched.conn_id,obj:redacted}});
   }
 }

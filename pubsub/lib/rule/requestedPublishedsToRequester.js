@@ -9,11 +9,14 @@ function exec(ob, put, queries) {
   for (const result of results) {
     if (result.id.substr(0, 24) <= ob.requested_publisheds.published_since) continue;
 
+    if (result.published.hidefrom && result.published.hidefrom.indexOf(ob.requested_publisheds.username) !== -1) continue;
+
     // *never* mutate existing message objects, always klone first
     const redacted = u.klone(result);
     delete redacted.published.conn_id; // don't leak connection data
     delete redacted.published.apn; // don't leak apple push data
     delete redacted.published.gcm; // don't leak google push data
+    delete redacted.published.hidefrom;
 
     put({websocket_obj_tx: {conn_id: ob.requested_publisheds.conn_id, obj: redacted}});
   }

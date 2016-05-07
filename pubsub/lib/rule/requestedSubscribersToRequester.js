@@ -10,7 +10,13 @@ function exec(ob, put, queries) {
   const results = queries.subscribed$channel.results(ob.requested_subscribers.channel);
   let set = {}; // using an object as a simple way to keep only the last "subscribed" for each username
   for (const result of results) {
-    set[result.subscribed.username] = ({username:result.subscribed.username,extra:result.subscribed.extra});
+    if (!result.subscribed.hidefrom || result.subscribed.hidefrom.indexOf(ob.requested_subscribers.username) === -1) {
+      // that user is not hiding from this one
+      set[result.subscribed.username] = ({username: result.subscribed.username, extra: result.subscribed.extra});
+    } else {
+      // if they are hiding on one or more of their subscriptions, then make sure they are not listed
+      delete set[result.subscribed.username]; // if any of the other users subscriptions list this user in their hidefrom list
+    }
   }
   for (const username in set) {
     response.members.list.push(set[username]);

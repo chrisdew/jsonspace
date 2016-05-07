@@ -16,7 +16,8 @@ function exec(ob, put, queries) {
         data:publish.data,
         conn_id:ob.websocket_obj_rx.conn_id,
         apn:ob.websocket_obj_rx.data.publish.apn,
-        gcm:ob.websocket_obj_rx.data.publish.gcm
+        gcm:ob.websocket_obj_rx.data.publish.gcm,
+        hidefrom:result.subscribed.hidefrom
       }
     });
   }
