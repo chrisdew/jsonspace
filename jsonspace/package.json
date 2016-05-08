@@ -1,6 +1,6 @@
 {
   "name": "jsonspace",
-  "version": "0.6.24",
+  "version": "0.6.26",
   "description": "jsonspace framework (unstable)",
   "main": "jsonspace.js",
   "scripts": {

@@ -9,7 +9,7 @@ function listen(ob, put) {
   server.serve(ob.protocol.dns.listen.port, ob.protocol.dns.listen.address);
 
   server.on('request', (request, response) => {
-    if (!request.address | !request.address.address | !request.address.port) {
+    if (!request.address || !request.address.address || !request.address.port) {
       put({dns_malformed_request:{
         request:request
       }});
@@ -25,7 +25,7 @@ function listen(ob, put) {
   });
 
   server.on('error', function (error, buf, request, response) {
-    if (!request.address | !request.address.address | !request.address.port) {
+    if (!request.address || !request.address.address || !request.address.port) {
       put({dns_malformed_request_error:{
         request:request,
         error: err.stack

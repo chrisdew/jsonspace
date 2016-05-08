@@ -1,6 +1,6 @@
 {
   "name": "pubsub_jsonspace",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "websocket pub/sub server",
   "main": "index.js",
   "scripts": {
@@ -19,7 +19,7 @@
   "author": "Chris Dew",
   "license": "AGPL-3.0",
   "dependencies": {
-    "jsonspace": "^0.6.24",
+    "jsonspace": "^0.6.26",
     "maxmind": "^0.6.0",
     "mocha": "^2.3.4",
     "ws": "^0.8.1",
