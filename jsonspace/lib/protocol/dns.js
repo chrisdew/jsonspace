@@ -28,7 +28,7 @@ function listen(ob, put) {
     if (!request.address || !request.address.address || !request.address.port) {
       put({dns_malformed_request_error:{
         request:request,
-        error: err.stack
+        error: error.stack
       }});
     } else {
       const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
@@ -38,7 +38,7 @@ function listen(ob, put) {
           request_id: request_id,
           question: request.question,
           from: request.address.address,
-          error: err.stack
+          error: error.stack
         }
       });
     }
