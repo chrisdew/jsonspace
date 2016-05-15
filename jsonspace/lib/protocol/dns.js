@@ -27,8 +27,8 @@ function listen(ob, put) {
   server.on('error', function (error, buf, request, response) {
     if (!request.address || !request.address.address || !request.address.port) {
       put({dns_malformed_request_error:{
-        request:request,
-        error: error.stack
+        //request:request,
+        //error: error.stack // this causes a "TypeError: Converting circular structure to JSON"
       }});
     } else {
       const request_id = 'dns_request|' + request.address.address + ':' + request.address.port + '|' + request.header.id;
